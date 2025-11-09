@@ -1,7 +1,7 @@
 "use strict";
 
 // 🌍 Backend API base URL
-const API_BASE = "https://backend-circleeats.onrender.com/api";
+const API_BASE = "https://backend-circleats.onrender.com/api";
 
 (() => {
   let form, listingCards, imageInput, imagePreview, locationInput, loading;
@@ -89,3 +89,4 @@ const API_BASE = "https://backend-circleeats.onrender.com/api";
     setupSubmit();
   });
 })();
+
