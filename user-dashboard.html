@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CircleEats — Dashboard</title>
+
+  <!-- Tailwind for Navbar styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="css/stylesofindex.css">
+
+  <!-- 🔹 Inline CSS for Navbar only -->
+  <style>
+    header.navbar {
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      width: 100%;
+    }
+    .navbar nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+    }
+    .navbar .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .navbar .brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 0.5rem;
+    }
+    .navbar .brand span {
+      font-weight: 700;
+      color: #0f766e; /* teal-700 */
+      font-size: 1.25rem;
+    }
+    .navbar .nav-btn {
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s;
+    }
+    .navbar .nav-btn:hover {
+      background-color: #f3f4f6;
+    }
+    .navbar select {
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+
+<body class="dashboard-page">
+
+  <!-- ✅ Navbar -->
+  <header class="navbar">
+    <nav>
+      <div class="brand">
+        <img src="assets/logo.jpg" alt="CirclEats Logo">
+        <span>CirclEats</span>
+      </div>
+
+      <div class="hidden md:flex gap-4">
+        <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
+        <button onclick="goToVolunteer()" class="nav-btn">Volunteer</button>
+        <button onclick="goToShelter()" class="nav-btn">Shelter</button>
+        <button onclick="goToProfile()" class="nav-btn">My Profile</button>
+      </div>
+
+      <select id="lang-select" onchange="setLanguage && setLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+        <option value="kn">ಕನ್ನಡ</option>
+      </select>
+    </nav>
+  </header>
+
+  <!-- Page content untouched -->
+  <main>
+    <section class="panel">
+      <div class="container dashboard-grid">
+        <aside class="sidebar">
+          <div id="welcomeBox" class="welcome-box"></div>
+          <div class="stats-tiles">
+            <div class="tile"><div class="tile-title">Donated</div><div id="statDonated" class="tile-value">₹0</div></div>
+            <div class="tile"><div class="tile-title">Deliveries</div><div id="statDeliveries" class="tile-value">0</div></div>
+            <div class="tile"><div class="tile-title">Shelters</div><div id="statShelters" class="tile-value">0</div></div>
+          </div>
+        </aside>
+
+        <section class="main-panel">
+          <div class="buttons-row center">
+            <button class="btn" data-target="activity">Activity</button>
+            <button class="btn" data-target="donations">Donations</button>
+            <button class="btn" data-target="volunteer">Volunteer</button>
+            <button class="btn" data-target="profile">Profile</button>
+          </div>
+
+          <div id="contentArea" class="content-area"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/dashboard.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    function goToVolunteer() { window.location.href = 'volunteer.html'; }
+    function goToShelter()   { window.location.href = 'shelter.html'; }
+    function goToProfile()   { window.location.href = 'user-dashboard.html'; }
+  </script>
+</body>
+</html>

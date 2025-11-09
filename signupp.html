@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CircleEats — Sign Up</title>
+  <link rel="stylesheet" href="css/stylesofindex.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body class="auth-page">
+  <div class="auth-wrapper container">
+    <div class="auth-card">
+      <div class="brand auth-brand">
+        <img src="assets/logo.jpg" alt="logo" class="logo-img-sm" />
+        <h2>Create your account</h2>
+      </div>
+
+      <form id="signupForm">
+        <label>Full Name</label>
+        <input id="name" type="text" required placeholder="Your full name" />
+
+        <label>Email</label>
+        <input id="email" type="email" required placeholder="you@example.com" />
+
+        <label>Password</label>
+        <input id="password" type="password" required placeholder="Create a password" />
+
+        <label>Confirm Password</label>
+        <input id="confirmPassword" type="password" required placeholder="Re-enter password" />
+
+        <button class="btn primary" type="submit" style="margin-top:14px;">Create Account</button>
+      </form>
+
+      <p style="text-align:center;margin-top:12px;">
+        Already have an account? <a href="login.html" class="link">Login here</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/auth.js"></script>
+</body>
+</html>

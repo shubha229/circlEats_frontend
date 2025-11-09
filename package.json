@@ -1,0 +1,23 @@
+{
+  "name": "circleats",
+  "version": "1.0.0",
+  "description": "CirclEats - A Progressive Web App for surplus food redistribution.",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server --port=3000 --entry-file=index.html",
+    "dev": "live-server --port=3000 --entry-file=index.html",
+    "build": "echo 'No build step needed for static PWA'"
+  },
+  "keywords": [
+    "PWA",
+    "food-redistribution",
+    "tailwind",
+    "vanilla-js",
+    "circleats"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
