@@ -1,7 +1,7 @@
 "use strict";
 
 // 🌍 Backend API base URL
-const API_BASE = "https://backend-circleeats.onrender.com/api";
+const API_BASE = "https://backend-circleats.onrender.com/api";
 
 document.addEventListener("DOMContentLoaded", () => {
   const loggedIn = JSON.parse(localStorage.getItem("loggedInUser"));
@@ -189,3 +189,4 @@ document.addEventListener("DOMContentLoaded", () => {
   updateStats();
   renderActivity(); // Default view
 });
+
