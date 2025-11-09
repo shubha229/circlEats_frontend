@@ -12,6 +12,15 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+  <!-- ✅ Add this before your own JS files -->
+  <!-- For OpenLayers (used for maps, 'ol' object) -->
+  <script src="https://cdn.jsdelivr.net/npm/ol@latest/dist/ol.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@latest/ol.css" />
+  
+  <!-- For THREE.js (used in bg.js for animations, 3D background etc.) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+
   <style>
     body { background: linear-gradient(135deg,#f0fdf4,#eff6ff); font-family:"Inter",sans-serif; }
     .card { transition: transform .2s,box-shadow .2s; position:relative; }
@@ -184,3 +193,4 @@
   </script>
 </body>
 </html>
+
