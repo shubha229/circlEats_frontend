@@ -3,43 +3,185 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Volunteer Dashboard</title>
+  <title>Volunteer Dashboard | CirclEats</title>
   <link rel="stylesheet" href="css/styleofvolunteer.css" />
 
-  <!-- OpenLayers CSS -->
+  <!-- ✅ OpenLayers (for map) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css" />
+  <script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
 
   <style>
-    /* ✅ Navigation Bar */
-    
-    nav .nav-btn {
-      color: white;
-      background: none;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.3s;
-    }
-    nav .nav-btn:hover {
-      color: #facc15; /* yellow-400 */
-    }
-    nav .active {
-      color: #facc15;
-    }
-
+    /* === Basic Reset === */
     body {
       margin: 0;
       font-family: "Inter", sans-serif;
-      background: linear-gradient(135deg, #f0fdf4, #eff6ff);
+      background-color: #ffffff;
+    }
+
+    /* === Navbar === */
+    header.navbar {
+      background-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+    }
+
+    .navbar nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .navbar .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .navbar .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 0.5rem;
+    }
+
+    .navbar .brand span {
+      font-weight: 700;
+      color: #0f766e;
+      font-size: 1.25rem;
+    }
+
+    .navbar .nav-btn {
+      padding: 0.5rem 0.9rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      color: #0f172a;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    .navbar .nav-btn:hover {
+      background-color: #f3f4f6;
+    }
+
+    .navbar .nav-btn.active {
+      background-color: #0f766e;
+      color: white;
+    }
+
+    .navbar .lang-select {
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    /* === Page Layout === */
+    .volunteer-header {
+      background-color: #ffffff;
+      text-align: center;
+      padding: 0.8rem 0;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .volunteer-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f766e;
+      margin: 0;
+    }
+
+    /* === Map === */
+    #map {
+      width: 90%;
+      height: 300px;
+      border: 1px solid #d1d5db;
+      border-radius: 0.75rem;
+      margin: 1rem auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    /* === Section Styles === */
+    section {
+      width: 90%;
+      max-width: 900px;
+      margin: 1rem auto;
+      background-color: #ffffff;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 1.5rem;
+    }
+
+    h2 {
+      color: #0f766e;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* === Pickup Cards === */
+    .pickup-card {
+      background: #ffffff;
+      border-left: 4px solid #10b981;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease;
+    }
+
+    .pickup-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .pickup-card h3 {
+      margin: 0 0 0.5rem 0;
+      color: #065f46;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .pickup-card p {
+      margin: 0.25rem 0;
+      color: #374151;
+      font-size: 0.95rem;
+    }
+
+    .pickup-card button {
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .pickup-card button:hover {
+      background-color: #115e59;
+    }
+
+    /* === Footer === */
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-top: 1.5rem;
     }
   </style>
 </head>
-<body style="background-color: white !important;">
 
+<body>
 
-  <!-- ✅ Navigation Bar -->
-    <!-- ✅ Navigation Bar (from dvs.html) -->
+  <!-- ✅ Navbar -->
   <header class="navbar">
     <nav>
       <div class="brand">
@@ -57,237 +199,38 @@
       <select id="lang-select" class="lang-select">
         <option value="en">English</option>
         <option value="hi">हिन्दी</option>
+        <option value="kn">ಕನ್ನಡ</option>
         <option value="te">తెలుగు</option>
-        <option value="ta">தமிழ்</option>
       </select>
     </nav>
-
-    <!-- ✅ Inline CSS (navbar only) -->
-    <style>
-      header.navbar {
-        background-color: #ffffff;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        width: 100%;
-      }
-      
-
-      .navbar nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1.5rem;
-      }
-
-      .navbar .brand {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .navbar .brand img {
-        width: 42px;
-        height: 42px;
-        border-radius: 0.5rem;
-      }
-
-      .navbar .brand span {
-        font-weight: 700;
-        color: #0f766e; /* teal-700 */
-        font-size: 1.25rem;
-      }
-
-      .navbar .nav-btn {
-        padding: 0.5rem 0.9rem;
-        border-radius: 0.5rem;
-        font-weight: 500;
-        color: #0f172a;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        transition: background 0.25s, color 0.25s;
-      }
-
-      .navbar .nav-btn:hover {
-        background-color: #f3f4f6;
-      }
-
-      .navbar .nav-btn.active {
-        background-color: #0f766e;
-        color: white;
-      }
-
-      .navbar .lang-select {
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-      }
-      header.navbar {
-  background-color: #ffffff !important;
-}
-  /* === Full White Theme (removes all green or gradient tints) === */
-body {
-  background-color: #ffffff !important;
-}
-
-/* Header background */
-.dashboard-header {
-  background-color: #ffffff !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-/* Map Section */
-#map {
-  background-color: #ffffff !important;
-  border: 1px solid #d1d5db;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-/* All sections (Pickups, Achievements, etc.) */
-section, .pickup-section, .achievements, .map-section {
-  background-color: #ffffff !important;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-  
-  
-}
-
-/* Cards */
-.pickup-card, .achievement-card {
-  background-color: #ffffff !important;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-}
-
-/* Remove any pastel gradient backgrounds */
-body, html {
-  background: #ffffff !important;
-}
-
-/* Optional: remove linear gradients completely */
-[style="linear-gradient"] {
-  background: #ffffff !important;
-}
-/* === Volunteer Header === */
-/* === Volunteer Header (Compact Version) === */
-.volunteer-header {
-  background-color: #ffffff !important;
-  text-align: center;
-  padding: 0.5rem 0; /* ✅ reduced space above & below */
-  margin: 0; /* ✅ removes outer spacing */
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-.volunteer-header h1 {
-  font-size: 1.9rem;
-  font-weight: 800;
-  color: #0f766e; /* teal-700 */
-  margin: 0; /* ✅ removes default top/bottom margin */
-  line-height: 1.2;
-}
-
-.volunteer-header p {
-  color: #374151; /* gray-700 */
-  font-size: 0.95rem;
-  margin-top: 0.25rem; /* minimal gap */
-  margin-bottom: 0; /* remove extra bottom space */
-}
-
-
-.volunteer-header h1 {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #0f766e; /* teal-700 for consistency */
-  margin-bottom: 0.5rem;
-}
-
-.volunteer-header p {
-  color: #374151; /* gray-700 */
-  font-size: 1rem;
-}
-
-
-    </style>
   </header>
 
-    <!-- ✅ Simplified White Header -->
+  <!-- ✅ Page Header -->
   <header class="volunteer-header">
-    <h1> Volunteer Dashboard</h1>
-    
+    <h1>Volunteer Dashboard</h1>
   </header>
 
-
-  <!-- Map Section -->
-  <section class="map-section">
+  <!-- ✅ Map Section -->
+  <section>
     <h2>📍 Geolocation Map</h2>
     <div id="map"></div>
   </section>
 
-  <!-- Pickups Section -->
+  <!-- ✅ Pickups Section -->
   <section class="pickup-section">
-    <h2>🍽 Nearby Pickups</h2>
-    <div class="pickup-card high">
-      <p><strong>Pasta Trays</strong> — 2.5 km — <span class="urgency-high">High Urgency</span></p>
-      <button class="btn" onclick="showDonorDetails('pasta')">Accept Pickup</button>
-    </div>
-    <div class="pickup-card medium">
-      <p><strong>Veg Salad Boxes</strong> — 4.1 km — <span class="urgency-medium">Medium Urgency</span></p>
-      <button class="btn" onclick="showDonorDetails('salad')">Accept Pickup</button>
-    </div>
-    <div class="pickup-card high">
-      <p><strong>Bread Loaves</strong> — 1.8 km — <span class="urgency-high">High Urgency</span></p>
-      <button class="btn" onclick="showDonorDetails('bread')">Accept Pickup</button>
+    <h2>🍽 Available Pickups</h2>
+    <div id="donationList" class="space-y-3 text-center text-gray-500">
+      <p>Loading available pickups...</p>
     </div>
   </section>
 
-  <!-- Achievements Section -->
-  <section class="achievements">
-    <h2>🏆 Your Achievements</h2>
-    <div class="achievement-card">
-      <p><strong>Points:</strong> 450</p>
-      <p><strong>Badges:</strong> 👩‍🍳 Community Hero, ⚡ Speedy Saver</p>
-    </div>
-  </section>
-
-  <!-- Donor Modal -->
-  <div id="donorModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-      <h3>🧑‍🍳 Donor Details</h3>
-      <p id="donorInfo"></p>
-      <button class="btn" onclick="closeModal()">Close</button>
-    </div>
-  </div>
-
-  <!-- Footer -->
+  <!-- ✅ Footer -->
   <footer>
-    © 2025 Food Waste Management System | Built with 💚 by Team CirclEats
+    © 2025 CirclEats — Empowering volunteers to make a difference 💚
   </footer>
 
-  <!-- OpenLayers JS -->
-  <script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
+  <!-- ✅ JS Files -->
   <script src="js/volunteer.js"></script>
-
-  <!-- ✅ Navigation Redirect Functions -->
-  <script>
-    function goToDonor() {
-      window.location.href = "dvs.html"; // your donor page filename
-    }
-    function goToVolunteer() {
-      window.location.href = "volunteer.html";
-    }
-    function goToShelter() {
-      window.location.href = "shelter.html";
-    }
-    function goToProfile() {
-      window.location.href = "user-dashboard.html";
-    }
-  </script>
 
 </body>
 </html>
