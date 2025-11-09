@@ -1,7 +1,7 @@
 "use strict";
 
 // 🌍 Backend API base URL
-const API_BASE = "https://backend-circleeats.onrender.com/api";
+const API_BASE = "https://backend-circleats.onrender.com/api";
 
 window.addEventListener("load", () => {
   const map = new ol.Map({
@@ -79,3 +79,4 @@ async function requestFood(id) {
   alert(data.message);
   loadCollectedFood();
 }
+
