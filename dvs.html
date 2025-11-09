@@ -8,18 +8,16 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Leaflet -->
+  <!-- Leaflet (for map support) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-  <!-- ✅ Add this before your own JS files -->
-  <!-- For OpenLayers (used for maps, 'ol' object) -->
-  <script src="https://cdn.jsdelivr.net/npm/ol@latest/dist/ol.js"></script>
+  <!-- ✅ OpenLayers (for advanced maps, 'ol' object) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@latest/ol.css" />
+  <script src="https://cdn.jsdelivr.net/npm/ol@latest/dist/ol.js"></script>
   
-  <!-- For THREE.js (used in bg.js for animations, 3D background etc.) -->
+  <!-- ✅ THREE.js (for 3D/animated backgrounds) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  
 
   <style>
     body { background: linear-gradient(135deg,#f0fdf4,#eff6ff); font-family:"Inter",sans-serif; }
@@ -32,11 +30,13 @@
     .reserved-label { position:absolute; top:10px; right:10px; background:#f59e0b; color:white; font-weight:bold; padding:2px 6px; border-radius:5px; font-size:0.75rem; }
   </style>
 
-  <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-screen z-0 pointer-events-none"></canvas>
   <meta name="theme-color" content="#0ea5a4" />
 </head>
 
 <body class="min-h-screen flex flex-col items-center py-8 px-4">
+  <!-- Background Canvas -->
+  <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-screen z-0 pointer-events-none"></canvas>
+
   <!-- ✅ Header -->
   <header class="bg-white shadow-sm sticky top-0 z-40 w-full">
     <nav class="w-full px-6 py-3 flex justify-between items-center">
@@ -132,13 +132,13 @@
       </div>
     </section>
 
-    <!-- Volunteer (hidden here, now separate page) -->
+    <!-- Volunteer (hidden here, separate page) -->
     <section id="volunteer-view" class="view-card hidden">
       <h2 class="section-title">Volunteer Dashboard</h2>
       <div id="volunteer-container"></div>
     </section>
 
-    <!-- Shelter (can remain empty if using separate page) -->
+    <!-- Shelter (hidden, separate page) -->
     <section id="shelter-view" class="hidden"></section>
   </main>
 
@@ -157,33 +157,22 @@
 
   <!-- ✅ Redirect + View Logic -->
   <script>
-    // Switch view for Donor (same page)
+    // Switch view for Donor
     function switchView(viewId) {
-      document.querySelectorAll("section[id$='-view']").forEach((section) => {
+      document.querySelectorAll("section[id$='-view']").forEach(section => {
         section.classList.add("hidden");
       });
       const activeSection = document.getElementById(viewId);
       if (activeSection) activeSection.classList.remove("hidden");
-
       if (viewId === "donor-view" && window.map) {
         setTimeout(() => window.map.invalidateSize(), 300);
       }
     }
 
-    // ✅ Redirect to Volunteer Page
-    function goToVolunteer() {
-      window.location.href = "volunteer.html";
-    }
-
-    // ✅ Redirect to Shelter Page
-    function goToShelter() {
-      window.location.href = "shelter.html";
-    }
-
-    // ✅ Redirect to Profile Page
-    function goToProfile() {
-      window.location.href = "user-dashboard.html";
-    }
+    // Navigation links
+    function goToVolunteer() { window.location.href = "volunteer.html"; }
+    function goToShelter() { window.location.href = "shelter.html"; }
+    function goToProfile() { window.location.href = "user-dashboard.html"; }
 
     // Footer year
     document.getElementById("year").textContent = new Date().getFullYear();
@@ -193,4 +182,3 @@
   </script>
 </body>
 </html>
-
