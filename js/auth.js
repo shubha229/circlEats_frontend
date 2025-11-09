@@ -79,6 +79,8 @@ if (loginForm) {
       if (res.ok) {
         localStorage.setItem("user_id", data.user_id);
         localStorage.setItem("user_name", data.name);
+        localStorage.setItem("email", data.email);       // ✅ store email for later use
+        localStorage.setItem("role", "donor");     
 
         alert(`🎉 Welcome back, ${data.name}!`);
         window.location.href = "dvs.html"; // or user-dashboard.html
@@ -102,4 +104,5 @@ function logout() {
 }
 
 document.getElementById("logoutBtn")?.addEventListener("click", logout);
+
 
