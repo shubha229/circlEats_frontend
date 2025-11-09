@@ -4,7 +4,7 @@
 const API_BASE = "https://backend-circleats.onrender.com/api";
 
 (() => {
-  let form, imageInput, imagePreview, locationInput, loading;
+  let form, imageInput, imagePreview, locationInput;
   let uploadedImage = "";
   let map, marker, currentCoords = null;
 
@@ -16,7 +16,7 @@ const API_BASE = "https://backend-circleats.onrender.com/api";
       target: "map",
       layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
       view: new ol.View({
-        center: ol.proj.fromLonLat([78.9629, 20.5937]), // India center
+        center: ol.proj.fromLonLat([78.9629, 20.5937]), // Center on India
         zoom: 5,
       }),
     });
@@ -43,7 +43,7 @@ const API_BASE = "https://backend-circleats.onrender.com/api";
       marker = new ol.layer.Vector({ source: vectorSource });
       map.addLayer(marker);
 
-      // Reverse geocode for location text
+      // Reverse geocode for human-readable location
       try {
         const res = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
@@ -73,14 +73,16 @@ const API_BASE = "https://backend-circleats.onrender.com/api";
     });
   }
 
-  /* ---------- Create Donation API Call ---------- */
+  /* ---------- Create Donation ---------- */
   async function createDonation(food, qty, loc, expiry, imgData) {
     try {
-      const user = JSON.parse(localStorage.getItem("loggedInUser")) || {};
-      const user_id = user._id || user.email || "anonymous";
+      // ✅ Use consistent storage keys from auth.js
+      const user_id = localStorage.getItem("user_id") || "anonymous";
+      const email = localStorage.getItem("email") || "unknown";
 
       const payload = {
         user_id,
+        donor_email: email,
         item: food,
         quantity: qty,
         location: loc,
@@ -100,6 +102,7 @@ const API_BASE = "https://backend-circleats.onrender.com/api";
       if (res.ok) {
         alert("✅ Donation posted successfully!");
         console.log("Created donation:", data);
+        await loadMyDonations(); // 🔁 Refresh the donor listings immediately
       } else {
         alert(`⚠️ Failed to create donation: ${data.message || "Unknown error"}`);
       }
@@ -109,7 +112,44 @@ const API_BASE = "https://backend-circleats.onrender.com/api";
     }
   }
 
-  /* ---------- Submit ---------- */
+  /* ---------- Load My Donations ---------- */
+  async function loadMyDonations() {
+    const user_id = localStorage.getItem("user_id");
+    if (!user_id) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/my_donations/${user_id}`);
+      const data = await res.json();
+
+      const container = $("listing-cards");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      if (!data.length) {
+        container.innerHTML = `<p class="text-gray-500 text-center py-4">No listings yet. Create your first donation!</p>`;
+        return;
+      }
+
+      data.forEach(d => {
+        const card = document.createElement("div");
+        card.className = "bg-white border-l-4 border-green-600 shadow-md rounded-xl p-4 mb-3";
+        card.innerHTML = `
+          <h3 class="text-lg font-semibold text-green-700">${d.item}</h3>
+          <p><strong>Quantity:</strong> ${d.quantity}</p>
+          <p><strong>Location:</strong> ${d.location}</p>
+          <p><strong>Status:</strong> <span class="text-gray-700">${d.status}</span></p>
+          ${d.collected_by ? `<p><strong>Volunteer:</strong> ${d.collected_by}</p>` : ""}
+          ${d.donated_to ? `<p><strong>Shelter:</strong> ${d.donated_to}</p>` : ""}
+        `;
+        container.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Error loading donations:", err);
+    }
+  }
+
+  /* ---------- Submit Handler ---------- */
   function setupSubmit() {
     if (!form) return;
     form.addEventListener("submit", e => {
@@ -127,22 +167,22 @@ const API_BASE = "https://backend-circleats.onrender.com/api";
 
       createDonation(food, qty, loc, expiry, uploadedImage);
 
-      // Reset form
+      // Reset form UI
       form.reset();
       if (imagePreview) imagePreview.innerHTML = "";
       uploadedImage = "";
     });
   }
 
-  /* ---------- Boot ---------- */
+  /* ---------- Initialize ---------- */
   document.addEventListener("DOMContentLoaded", () => {
     form = $("donation-form");
     imageInput = $("food-image");
     imagePreview = $("image-preview");
     locationInput = $("location-input");
-    loading = $("loading");
 
     setupImagePreview();
     setupSubmit();
+    loadMyDonations(); // ✅ Show listings when page loads
   });
 })();
