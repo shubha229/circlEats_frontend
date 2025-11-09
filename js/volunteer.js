@@ -1,11 +1,8 @@
 "use strict";
 
-// 🌍 Backend API base URL
 const API_BASE = "https://backend-circleats.onrender.com/api";
 
-// ---------- Volunteer Dashboard ----------
 window.addEventListener("DOMContentLoaded", () => {
-  // Ensure user is logged in
   const volunteerEmail = localStorage.getItem("email");
   if (!volunteerEmail) {
     alert("Please log in as a volunteer first!");
@@ -13,60 +10,106 @@ window.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Load available donations
-  loadDonations();
+  initMap();
+  loadDonations(volunteerEmail);
 });
 
-/* 🔹 Load All Donor Listings (Pending Donations) */
-async function loadDonations() {
-  const listContainer = document.getElementById("donationList") || document.querySelector(".pickup-section");
-  if (!listContainer) return;
+/* ---------- Initialize Map ---------- */
+function initMap() {
+  const map = new ol.Map({
+    target: "map",
+    layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
+    view: new ol.View({
+      center: ol.proj.fromLonLat([77.5946, 12.9716]), // India center
+      zoom: 12,
+    }),
+  });
+
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const coords = ol.proj.fromLonLat([pos.coords.longitude, pos.coords.latitude]);
+      map.getView().setCenter(coords);
+      map.getView().setZoom(14);
+
+      const marker = new ol.Feature({ geometry: new ol.geom.Point(coords) });
+      const markerLayer = new ol.layer.Vector({
+        source: new ol.source.Vector({ features: [marker] }),
+        style: new ol.style.Style({
+          image: new ol.style.Icon({
+            anchor: [0.5, 1],
+            src: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
+            scale: 0.07,
+          }),
+        }),
+      });
+      map.addLayer(markerLayer);
+    });
+  }
+}
+
+/* ---------- Load Donations (Available + Accepted) ---------- */
+async function loadDonations(volunteerEmail) {
+  const donationList = document.getElementById("donationList");
+  const myDeliveries = document.getElementById("myDeliveries");
 
   try {
     const res = await fetch(`${API_BASE}/donations`);
     const data = await res.json();
 
-    // Clear old content
-    listContainer.innerHTML = "";
+    // Separate Pending and Accepted
+    const pending = data.filter((d) => d.status === "Pending");
+    const accepted = data.filter(
+      (d) => d.collected_by && d.collected_by.toLowerCase() === volunteerEmail.toLowerCase()
+    );
 
-    // Filter Pending donations only
-    const pendingDonations = data.filter(d => d.status === "Pending");
+    // Render available pickups
+    donationList.innerHTML = pending.length
+      ? pending.map(renderPickupCard).join("")
+      : `<p>No available pickups right now.</p>`;
 
-    if (pendingDonations.length === 0) {
-      listContainer.innerHTML = `
-        <p class="text-gray-500 text-center py-4">
-          🎉 All donations are currently picked up or delivered. Check back later!
-        </p>`;
-      return;
-    }
-
-    // Render each pending donation card
-    pendingDonations.forEach(d => {
-      const card = document.createElement("div");
-      card.className = "pickup-card bg-white shadow-md rounded-xl border-l-4 border-green-600 p-4 mb-3";
-      card.innerHTML = `
-        <h3 class="text-xl font-semibold text-green-700">${d.item}</h3>
-        <p><strong>Quantity:</strong> ${d.quantity}</p>
-        <p><strong>Location:</strong> ${d.location}</p>
-        <p><strong>Status:</strong> 
-          <span class="inline-block bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-sm">${d.status}</span>
-        </p>
-        <button onclick="acceptDonation('${d._id}')"
-          class="mt-3 bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md shadow-sm">
-          🚚 Accept Pickup
-        </button>
-      `;
-      listContainer.appendChild(card);
-    });
+    // Render accepted deliveries
+    myDeliveries.innerHTML = accepted.length
+      ? accepted.map(renderAcceptedCard).join("")
+      : `<p>You haven’t accepted any deliveries yet.</p>`;
   } catch (err) {
-    console.error("❌ Error fetching donations:", err);
-    listContainer.innerHTML = `<p class="text-red-500 text-center">Failed to load donations.</p>`;
+    console.error("Error loading donations:", err);
+    donationList.innerHTML = `<p class="text-red-500">Failed to load donations.</p>`;
   }
 }
 
-/* 🔹 Accept Donation (Mark as Collected) */
+/* ---------- Render Pickup Cards ---------- */
+function renderPickupCard(d) {
+  return `
+    <div class="pickup-card">
+      <h3>${d.item}</h3>
+      <p><strong>Quantity:</strong> ${d.quantity}</p>
+      <p><strong>Location:</strong> ${d.location}</p>
+      <p>Status: <span class="text-yellow-600 font-medium">${d.status}</span></p>
+      <button onclick="acceptDonation('${d._id}')">🚚 Accept Pickup</button>
+    </div>
+  `;
+}
+
+/* ---------- Render Accepted Deliveries ---------- */
+function renderAcceptedCard(d) {
+  return `
+    <div class="pickup-card" style="border-left-color:#2563eb;">
+      <h3>${d.item}</h3>
+      <p><strong>Quantity:</strong> ${d.quantity}</p>
+      <p><strong>Location:</strong> ${d.location}</p>
+      <p>Status: <span class="text-green-700 font-medium">${d.status}</span></p>
+      <p><strong>Donated To:</strong> ${d.donated_to || "Awaiting shelter request"}</p>
+    </div>
+  `;
+}
+
+/* ---------- Accept Pickup ---------- */
 async function acceptDonation(id) {
-  const volunteer = localStorage.getItem("email") || "anonymous";
+  const volunteer = localStorage.getItem("email");
+  if (!volunteer) {
+    alert("Please log in before accepting a pickup!");
+    return;
+  }
 
   try {
     const res = await fetch(`${API_BASE}/collect_donation/${id}`, {
@@ -78,13 +121,14 @@ async function acceptDonation(id) {
     const data = await res.json();
 
     if (res.ok) {
-      alert("✅ Pickup confirmed!");
-      loadDonations(); // refresh updated list
+      alert("✅ Pickup accepted successfully!");
+      // Immediately update UI — move from Available to My Deliveries
+      await loadDonations(volunteer);
     } else {
       alert("⚠️ " + (data.error || "Unable to accept pickup"));
     }
   } catch (err) {
-    console.error("❌ Error accepting donation:", err);
-    alert("Server error while accepting donation.");
+    console.error("Error accepting donation:", err);
+    alert("Server error while accepting pickup.");
   }
 }
