@@ -3,7 +3,7 @@
 // =======================
 
 // ✅ Your deployed backend URL
-const API_BASE = "https://shubha22nayak-circleats_backend.hf.space/api";
+const API_BASE = "https://backend-circleats.onrender.com/api";
 
 
 // -----------------------
@@ -102,3 +102,4 @@ function logout() {
 }
 
 document.getElementById("logoutBtn")?.addEventListener("click", logout);
+
