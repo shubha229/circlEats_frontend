@@ -4,7 +4,13 @@
 const API_BASE = "https://backend-circleats.onrender.com/api";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const loggedIn = JSON.parse(localStorage.getItem("loggedInUser"));
+  const loggedIn = {
+    _id: localStorage.getItem("user_id"),
+    name: localStorage.getItem("user_name"),
+    email: localStorage.getItem("email") || "unknown",
+    role: localStorage.getItem("role") || "donor"
+  };
+  "));
 
   // Redirect if not logged in
   if (!loggedIn || !loggedIn.email) {
@@ -189,4 +195,5 @@ document.addEventListener("DOMContentLoaded", () => {
   updateStats();
   renderActivity(); // Default view
 });
+
 
