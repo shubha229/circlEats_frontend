@@ -8,9 +8,10 @@
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- OpenLayers -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css" />
+  <script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
+
 
   <style>
     body { background: linear-gradient(135deg,#f0fdf4,#eff6ff); font-family:"Inter",sans-serif; }
@@ -117,10 +118,10 @@
       </div>
 
       <!-- Listings -->
-      <div id="my-listings">
-        <h2 class="text-2xl font-semibold text-blue-600 mb-4 text-center">📋 My Listings</h2>
-        <div id="listing-cards" class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"></div>
-      </div>
+      <section class="my-6">
+        <h2 class="text-2xl font-bold text-green-700 mb-3">📦 My Listings</h2>
+        <div id="listing-cards" class="space-y-3"></div>
+      </section>
     </section>
 
     <!-- Volunteer (hidden here, now separate page) -->
@@ -137,6 +138,12 @@
   <footer class="w-full bg-white shadow-inner py-4 text-center text-xs text-gray-500 fixed bottom-0 left-0">
     © <span id="year"></span> CirclEats. All rights reserved.
   </footer>
+  <script>
+    if (!localStorage.getItem("user_id")) {
+      alert("Please log in first!");
+      window.location.href = "login.html";
+    }
+  </script>
 
   <!-- JS Files -->
   <script src="js/utils.js"></script>
@@ -184,3 +191,4 @@
   </script>
 </body>
 </html>
+
