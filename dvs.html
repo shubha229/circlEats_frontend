@@ -1,100 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>CirclEats | Donor Dashboard</title>
-<link rel="icon" type="image/png" href="assets/logo.jpg">
+<link rel="icon" href="assets/logo.jpg" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css" />
+<script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
 <style>
-/* ==== GLOBAL ==== */
-body{
-  margin:0;
-  font-family:"Inter",sans-serif;
-  background:linear-gradient(135deg,#f0fdf4,#ecfeff,#e0f2fe);
-  color:#1f2937;
+/* === GLOBAL === */
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 40%, #e0f2fe 100%);
+  color: #1f2937;
 }
-/* ==== NAVBAR ==== */
-header.navbar{
-  background:#ffffffcc;
-  backdrop-filter:blur(12px);
-  box-shadow:0 2px 8px rgba(0,0,0,.05);
-  position:sticky;top:0;z-index:50;width:100%;
+
+/* === NAVBAR === */
+header.navbar {
+  background: #ffffffcc;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
-.navbar nav{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:.8rem 1.5rem;
+.navbar nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1.5rem;
 }
-.brand{display:flex;align-items:center;gap:.6rem;}
-.brand img{width:42px;height:42px;border-radius:.5rem;}
-.brand span{font-weight:700;color:#0f766e;font-size:1.3rem;}
-.nav-links{display:flex;gap:.5rem;}
-.nav-btn{
-  padding:.5rem 1rem;border-radius:.6rem;background:transparent;border:none;
-  font-weight:500;color:#0f172a;cursor:pointer;transition:.25s;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
-.nav-btn:hover{background:#f3f4f6;}
-.nav-btn.active{background:#0f766e;color:#fff;box-shadow:0 2px 5px rgba(15,118,110,.3);}
-.lang-select{
-  border:1px solid #d1d5db;border-radius:.4rem;padding:.25rem .5rem;font-size:.85rem;cursor:pointer;
+.brand img {
+  width: 42px;
+  height: 42px;
+  border-radius: 0.5rem;
 }
-/* ==== STRUCTURE ==== */
-section{text-align:center;}
-h1{font-size:2.5rem;font-weight:800;color:#0f766e;margin:.5rem 0;}
-h2{color:#0f766e;}
-main{max-width:1000px;margin:auto;padding:1rem;}
-.card{
-  background:#ffffffb3;
-  backdrop-filter:blur(8px);
-  border:1px solid #d1fae5;
-  border-radius:1rem;
-  padding:1.5rem;
-  box-shadow:0 4px 10px rgba(0,0,0,.05);
-  margin-bottom:1.5rem;
+.brand span {
+  font-weight: 700;
+  color: #0f766e;
+  font-size: 1.3rem;
 }
-input,select{
-  width:100%;padding:.6rem;border:1px solid #d1d5db;border-radius:.4rem;
-  font-family:inherit;
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
 }
-button.submit{
-  background:#0f766e;color:#fff;border:none;border-radius:.6rem;
-  padding:.7rem 1.2rem;font-weight:600;cursor:pointer;transition:.25s;
+.nav-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.6rem;
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
-button.submit:hover{background:#115e59;}
-footer{text-align:center;color:#6b7280;padding:1rem;border-top:1px solid #e5e7eb;margin-top:2rem;}
+.nav-btn:hover {
+  background-color: #f3f4f6;
+}
+.nav-btn.active {
+  background-color: #0f766e;
+  color: white;
+  box-shadow: 0 2px 5px rgba(15, 118, 110, 0.3);
+}
+.lang-select {
+  border: 1px solid #d1d5db;
+  border-radius: 0.4rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+}
+
+/* === PAGE HEADER === */
+.page-header {
+  text-align: center;
+  background: linear-gradient(to right, #ecfdf5, #e0f2fe);
+  padding: 2rem 1rem;
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.03);
+}
+.page-header h1 {
+  color: #065f46;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+.page-header p {
+  color: #374151;
+  font-size: 1rem;
+}
+
+/* === MAIN SECTIONS === */
+main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+.card {
+  background: #ffffffdd;
+  backdrop-filter: blur(6px);
+  border: 1px solid #d1fae5;
+  border-radius: 1rem;
+  padding: 1.8rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+.card h2 {
+  color: #0f766e;
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+label {
+  display: block;
+  font-weight: 500;
+  margin: 0.8rem 0 0.3rem;
+}
+input,
+select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+}
+button.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f766e;
+  color: white;
+  border: none;
+  border-radius: 0.6rem;
+  padding: 0.7rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+  margin-top: 1rem;
+}
+button.submit:hover {
+  background: #115e59;
+}
+
+/* === MAP SECTION === */
+#map {
+  width: 100%;
+  height: 300px;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  margin-top: 0.5rem;
+}
+
+/* === FOOTER === */
+footer {
+  text-align: center;
+  color: #6b7280;
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 2rem;
+}
 </style>
 </head>
+
 <body>
+<!-- ✅ Navbar -->
 <header class="navbar">
-<nav>
-  <div class="brand"><img src="assets/logo.jpg"><span>CirclEats</span></div>
-  <div class="nav-links">
-    <button class="nav-btn active">Donor</button>
-    <button onclick="location.href='volunteer.html'" class="nav-btn">Volunteer</button>
-    <button onclick="location.href='shelter.html'" class="nav-btn">Shelter</button>
-    <button onclick="location.href='user-dashboard.html'" class="nav-btn">Profile</button>
-  </div>
-  <select class="lang-select"><option>English</option><option>हिन्दी</option><option>ಕನ್ನಡ</option><option>తెలుగు</option></select>
-</nav>
+  <nav>
+    <div class="brand">
+      <img src="assets/logo.jpg" alt="CirclEats" />
+      <span>CirclEats</span>
+    </div>
+    <div class="nav-links">
+      <button class="nav-btn active">Donor</button>
+      <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
+      <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
+      <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
+    </div>
+    <select class="lang-select">
+      <option>English</option>
+      <option>हिन्दी</option>
+      <option>ಕನ್ನಡ</option>
+      <option>తెలుగు</option>
+    </select>
+  </nav>
 </header>
 
-<section class="py-6">
+<!-- ✅ Header -->
+<section class="page-header">
   <h1>Donor Dashboard</h1>
   <p>Create and manage your food donations 🌱</p>
 </section>
 
+<!-- ✅ Main Content -->
 <main>
+  <!-- Create Donation -->
   <div class="card">
     <h2>🧾 Create Donation</h2>
-    <form>
+    <form id="donation-form">
       <label>🍲 Food Type</label>
-      <select><option>Select</option><option>Cooked Meals</option><option>Bakery Items</option></select><br><br>
+      <select id="food-type">
+        <option value="">Select</option>
+        <option>Cooked Meals</option>
+        <option>Bakery Items</option>
+        <option>Fruits</option>
+        <option>Vegetables</option>
+      </select>
+
       <label>🍽 Quantity</label>
-      <input type="number" min="1"><br><br>
+      <input id="quantity" type="number" min="1" />
+
       <label>📍 Location</label>
-      <input type="text" placeholder="Enter address"><br><br>
-      <button class="submit">➕ Create Listing</button>
+      <input id="location-input" type="text" placeholder="Enter address or click map below" />
+      <div id="map"></div>
+
+      <button type="submit" class="submit">➕ Create Listing</button>
     </form>
   </div>
+
+  <!-- Listings -->
   <div class="card">
     <h2>📦 My Listings</h2>
     <p id="listing-cards">Loading listings…</p>
@@ -102,5 +233,57 @@ footer{text-align:center;color:#6b7280;padding:1rem;border-top:1px solid #e5e7eb
 </main>
 
 <footer>© 2025 CirclEats | Empowering Generosity 💚</footer>
+
+<script>
+/* === MAP INIT === */
+window.addEventListener("load", () => {
+  const map = new ol.Map({
+    target: "map",
+    layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
+    view: new ol.View({
+      center: ol.proj.fromLonLat([78.9629, 20.5937]), // India center
+      zoom: 4,
+    }),
+  });
+
+  // Click to set marker and reverse geocode
+  map.on("click", async (evt) => {
+    const coord = ol.proj.toLonLat(evt.coordinate);
+    const [lon, lat] = coord;
+
+    const vectorSource = new ol.source.Vector({
+      features: [new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([lon, lat])))],
+    });
+
+    const markerStyle = new ol.style.Style({
+      image: new ol.style.Icon({
+        src: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
+        scale: 0.07,
+      }),
+    });
+
+    const vectorLayer = new ol.layer.Vector({
+      source: vectorSource,
+      style: markerStyle,
+    });
+
+    map.getLayers().getArray().slice(1).forEach((l) => map.removeLayer(l)); // remove old marker
+    map.addLayer(vectorLayer);
+
+    // Reverse geocode
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+      );
+      const data = await res.json();
+      if (data.display_name) {
+        document.getElementById("location-input").value = data.display_name;
+      }
+    } catch (err) {
+      console.warn("Geocode failed", err);
+    }
+  });
+});
+</script>
 </body>
 </html>
