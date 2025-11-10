@@ -3,20 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shelter Dashboard</title>
-  <link rel="stylesheet" href="css/stylesofshelter.css" />
-  
+  <title>Shelter Dashboard | CirclEats</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <!-- OpenLayers -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css" />
   <script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
 
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: "Inter", sans-serif;
+      color: #1f2937;
+    }
+    header.navbar {
+      background-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      width: 100%;
+    }
+    .navbar nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+    }
+    .navbar .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .navbar .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 0.5rem;
+    }
+    .navbar .brand span {
+      font-weight: 700;
+      color: #0f766e;
+      font-size: 1.25rem;
+    }
+    .navbar .nav-btn {
+      padding: 0.5rem 0.9rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      color: #0f172a;
+      background: transparent;
+      transition: background 0.25s, color 0.25s;
+    }
+    .navbar .nav-btn:hover {
+      background-color: #f3f4f6;
+    }
+    .navbar .nav-btn.active {
+      background-color: #0f766e;
+      color: white;
+    }
+    #map {
+      height: 350px;
+      border-radius: 0.75rem;
+      border: 1px solid #d1d5db;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .food-card {
+      border-left: 4px solid #10b981;
+      border-radius: 0.75rem;
+      background-color: #ffffff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+  </style>
 </head>
-<body class="bg-gray-50">
 
-  <!-- 🔹 NAVIGATION BAR -->
-    <!-- 🔹 NAVIGATION BAR (Replaced with dvs.html style) -->
+<body>
+  <!-- ✅ Navbar -->
   <header class="navbar">
     <nav>
       <div class="brand">
@@ -28,286 +92,33 @@
         <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
         <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
         <button onclick="window.location.href='shelter.html'" class="nav-btn active">Shelter</button>
-        <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">My Profile</button>
+        <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
       </div>
-
-      <select id="lang-select" class="lang-select">
-        <option value="en">English</option>
-        <option value="hi">हिन्दी</option>
-        <option value="te">తెలుగు</option>
-        <option value="ta">தமிழ்</option>
-      </select>
     </nav>
-
-    <!-- ✅ Navbar CSS only -->
-    <style>
-      header.navbar {
-        background-color: #ffffff;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        width: 100%;
-      }
-
-      .navbar nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1.5rem;
-      }
-
-      .navbar .brand {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .navbar .brand img {
-        width: 42px;
-        height: 42px;
-        border-radius: 0.5rem;
-      }
-
-      .navbar .brand span {
-        font-weight: 700;
-        color: #0f766e; /* teal-700 */
-        font-size: 1.25rem;
-      }
-
-      .navbar .nav-btn {
-        padding: 0.5rem 0.9rem;
-        border-radius: 0.5rem;
-        font-weight: 500;
-        color: #0f172a;
-        background: transparent;
-        transition: background 0.25s, color 0.25s;
-      }
-
-      .navbar .nav-btn:hover {
-        background-color: #f3f4f6;
-      }
-
-      .navbar .nav-btn.active {
-        background-color: #0f766e;
-        color: white;
-      }
-
-      .navbar .lang-select {
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-      }
-      #map {
-  background-color: white !important; /* ✅ makes map background white */
-}
-      /* === Force clean white backgrounds site-wide === */
-body {
-  background-color: #ffffff !important; /* pure white background */
-}
-
-/* Header background (remove Tailwind’s green) */
-.header {
-  background-color: #ffffff !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-/* All major sections white */
-section, .search-section, .map-section, .achievements, .pickup-section, .coupon-section, .rounded-2xl {
-  background-color: #ffffff !important;
-}
-
-/* Map area */
-#map {
-  background-color: #ffffff !important;
-  border: 1px solid #d1d5db;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  border-radius: 0.75rem;
-}
-
-/* Remove any green-tinted gradients */
-section[style*="linear-gradient"] {
-  background: #ffffff !important;
-}
-
-
-
-    </style>
   </header>
 
-
-  <!-- 🔹 HEADER -->
-  <header class="header text-center py-6 bg-green-100 shadow-inner">
+  <!-- ✅ Header -->
+  <section class="text-center py-6 bg-green-50 shadow-inner">
     <h1 class="text-3xl font-bold text-green-800">Shelter Dashboard</h1>
-     
-  </header>
-  
-
-  <!-- 🔹 SEARCH SECTION -->
-  <section class="search-section text-center my-6">
-    <input type="text" id="locationInput" placeholder="Enter a location..." class="border border-gray-300 rounded-md px-3 py-2 w-64" />
-    <button id="searchBtn" class="ml-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">Search</button>
+    <p class="text-gray-600 mt-1">View available donations and accept what your shelter needs.</p>
   </section>
 
-  <!-- 🔹 MAP SECTION -->
-  <section class="map-section text-center mb-10">
-    <h3 class="text-xl font-semibold mb-3">📍 Geolocation Matching Map</h3>
-    <div id="map" class="mx-auto border border-gray-300 rounded-lg shadow-md" style="width: 90%; height: 400px;"></div>
+  <!-- ✅ Map Section -->
+  <section class="p-6 max-w-5xl mx-auto text-center">
+    <h2 class="text-2xl font-semibold text-green-700 mb-3">📍 Select Shelter Location</h2>
+    <div id="map" class="mx-auto"></div>
+    <p class="text-sm text-gray-500 mt-2">Click on the map to set your shelter location before accepting food.</p>
   </section>
 
-  <!-- 🔹 SHELTER FEATURES -->
-  <div class="bg-gray-100 py-10 px-6 space-y-8">
+  <!-- ✅ Available Donations -->
+  <section class="p-6 max-w-5xl mx-auto">
+    <h2 class="text-2xl font-semibold text-green-700 mb-4 text-center">🍱 Food Ready for Donation</h2>
+    <div id="foodList" class="text-center text-gray-500">Loading available donations...</div>
+  </section>
 
-    <!-- Claimed Food Section -->
-    <section class="rounded-2xl shadow-md p-6 mb-6" style="background: linear-gradient(135deg, #ffe0e0 0%, #ffb6b9 100%);">
-      <h2 class="text-2xl font-bold flex items-center mb-3">🍱 Claimed Food</h2>
-
-      <!-- Food Item 1 -->
-      <div class="bg-white/80 border border-gray-200 rounded-lg p-4 mb-3 flex justify-between items-center">
-        <div>
-          <h3 class="font-semibold text-gray-800">Fried Rice</h3>
-          <p class="text-sm text-gray-600">50 Servings — Collected at 3 PM</p>
-          <p class="text-green-600 font-medium">Status: Collected</p>
-        </div>
-        <button onclick="openModal('foodDetailsModal')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">
-          View Details
-        </button>
-      </div>
-
-      <!-- Food Item 2 -->
-      <div class="bg-white/80 border border-gray-200 rounded-lg p-4 flex justify-between items-center">
-        <div>
-          <h3 class="font-semibold text-gray-800">Sandwiches</h3>
-          <p class="text-sm text-gray-600">40 Servings — Awaiting Pickup</p>
-          <p id="sandwich-status" class="text-yellow-600 font-medium">Status: Pending</p>
-        </div>
-        <button id="confirm-pickup-btn" onclick="openModal('pickupModal')" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md">
-          Confirm Pickup
-        </button>
-      </div>
-    </section>
-
-    <!-- Coupon Wallet Section -->
-    <section class="rounded-2xl shadow-md p-6 mb-6" style="background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);">
-      <h2 class="text-2xl font-bold flex items-center mb-2">🎟 Coupon Wallet</h2>
-      <p class="text-gray-800 mb-4">Redeem partner rewards for community benefits</p>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Coupon 1 -->
-        <div onclick="openModal('cafeModal')" class="rounded-lg shadow p-5 text-white font-medium cursor-pointer transform transition hover:scale-105"
-             style="background: linear-gradient(90deg, #d946ef 0%, #8b5cf6 100%);">
-          <h3 class="text-lg">☕ 10% Off at Local Café</h3>
-          <p class="text-sm opacity-90">Tap to Redeem</p>
-        </div>
-
-        <!-- Coupon 2 -->
-        <div onclick="openModal('breadModal')" class="rounded-lg shadow p-5 text-white font-medium cursor-pointer transform transition hover:scale-105"
-             style="background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);">
-          <h3 class="text-lg">🍞 Free Bread Pack</h3>
-          <p class="text-sm opacity-90">Partner Bakery</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Achievements Section -->
-    <section class="rounded-2xl shadow-md p-6" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
-      <h2 class="text-2xl font-bold flex items-center mb-3">🏆 Your Achievements</h2>
-      <p class="text-gray-800 mb-2">Points: <strong>320</strong></p>
-      <p class="text-gray-800 mb-4">Badges: <strong>Community Ally, Efficient Distributor</strong></p>
-      <button onclick="openModal('impactModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">View Impact</button>
-    </section>
-  </div>
-
-  <!-- ===== MODALS ===== -->
-  <div id="foodDetailsModal" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-      <h3 class="text-xl font-bold mb-3 text-gray-800">Fried Rice Details</h3>
-      <p class="text-gray-600 mb-4">🍚 50 servings of Fried Rice were successfully collected at 3 PM by Shelter ID: 5548.</p>
-      <button onclick="closeModal('foodDetailsModal')" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Close</button>
-    </div>
-  </div>
-
-  <!-- Pickup Modal -->
-  <div id="pickupModal" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-      <h3 class="text-xl font-bold mb-3 text-gray-800">Confirm Sandwich Pickup</h3>
-      <p class="text-gray-600 mb-4">Confirm that the 40 servings of Sandwiches have been picked up successfully.</p>
-      <div class="flex justify-end space-x-3">
-        <button onclick="closeModal('pickupModal')" class="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500">Cancel</button>
-        <button onclick="confirmPickup()" class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600">Confirm</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Other modals (unchanged) -->
-  <div id="cafeModal" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-      <h3 class="text-xl font-bold mb-3 text-gray-800">☕ Café Coupon Redeemed!</h3>
-      <p class="text-gray-600 mb-4">
-        You’ve successfully redeemed your <strong>10% Off at Local Café</strong> coupon.
-        Show this confirmation code at checkout: <span class="font-mono bg-gray-100 px-2 py-1 rounded">CAFÉ10</span>
-      </p>
-      <button onclick="closeModal('cafeModal')" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">Close</button>
-    </div>
-  </div>
-
-  <div id="breadModal" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-      <h3 class="text-xl font-bold mb-3 text-gray-800">🍞 Bread Pack Coupon Redeemed!</h3>
-      <p class="text-gray-600 mb-4">
-        You’ve claimed a <strong>Free Bread Pack</strong> from our partner bakery.
-        Show this confirmation code at pickup: <span class="font-mono bg-gray-100 px-2 py-1 rounded">BREADFREE</span>
-      </p>
-      <button onclick="closeModal('breadModal')" class="bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600">Close</button>
-    </div>
-  </div>
-
-  <div id="impactModal" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-      <h3 class="text-xl font-bold mb-3 text-gray-800">Community Impact</h3>
-      <p class="text-gray-600 mb-4">
-        🌍 Your shelter has distributed over <strong>90 meals</strong> this week and earned 320 points!
-        Keep up your amazing work supporting local communities.
-      </p>
-      <button onclick="closeModal('impactModal')" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Close</button>
-    </div>
-  </div>
-
-  <!-- 🔹 JS for Modals + Navigation -->
-  <script>
-    function navigateTo(page) {
-      window.location.href = page;
-    }
-
-    function openModal(id) {
-      document.getElementById(id).classList.remove('hidden');
-      document.getElementById(id).classList.add('flex');
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-      document.getElementById(id).classList.remove('flex');
-    }
-
-    function confirmPickup() {
-      alert("✅ Sandwich pickup confirmed!");
-      const sandwichStatus = document.querySelector("#sandwich-status");
-      if (sandwichStatus) {
-        sandwichStatus.textContent = "Status: Collected";
-        sandwichStatus.classList.remove("text-yellow-600");
-        sandwichStatus.classList.add("text-green-600");
-      }
-      const confirmBtn = document.querySelector("#confirm-pickup-btn");
-      if (confirmBtn) {
-        confirmBtn.textContent = "Collected";
-        confirmBtn.disabled = true;
-        confirmBtn.classList.remove("bg-amber-500", "hover:bg-amber-600");
-        confirmBtn.classList.add("bg-green-500");
-      }
-      closeModal('pickupModal');
-    }
-  </script>
+  <footer class="text-center py-4 text-xs text-gray-400 mt-10 border-t">
+    © 2025 CirclEats — Nourishing Communities with Care 💚
+  </footer>
 
   <script src="js/shelter.js"></script>
 </body>
