@@ -3,192 +3,146 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CirclEats — Rescue Food, Nourish Community</title>
-  
-  <!-- Tailwind -->
+  <title>CirclEats | Donor Dashboard</title>
+  <link rel="icon" type="image/png" href="assets/logo.jpg" />
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- OpenLayers -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css" />
   <script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
 
-
   <style>
-    body { background: linear-gradient(135deg,#f0fdf4,#eff6ff); font-family:"Inter",sans-serif; }
-    .card { transition: transform .2s,box-shadow .2s; position:relative; }
-    .card:hover { transform: translateY(-4px); box-shadow:0 6px 15px rgba(0,0,0,.1); }
-    #map { height: 250px; border-radius: .75rem; }
-    .collected { background-color:#bbf7d0 !important; border-left-color:#16a34a !important; }
-    .expired { background-color:#fee2e2 !important; border-left-color:#dc2626 !important; }
-    .reserved { border-left-color:#facc15 !important; opacity:0.9; }
-    .reserved-label { position:absolute; top:10px; right:10px; background:#f59e0b; color:white; font-weight:bold; padding:2px 6px; border-radius:5px; font-size:0.75rem; }
-  </style>
+    body {
+      background: linear-gradient(135deg, #f0fdf4, #ecfeff, #e0f2fe);
+      font-family: "Inter", sans-serif;
+      color: #1f2937;
+    }
 
-  <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-screen z-0 pointer-events-none"></canvas>
-  <meta name="theme-color" content="#0ea5a4" />
+    /* Navbar (shared across all) */
+    header.navbar {
+      background: #ffffffcc;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      width: 100%;
+    }
+    .navbar nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1.5rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 0.5rem;
+    }
+    .brand span {
+      font-weight: 700;
+      color: #0f766e;
+      font-size: 1.3rem;
+    }
+    .nav-links { display: flex; gap: 0.5rem; }
+    .nav-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 0.6rem;
+      background: transparent;
+      border: none;
+      font-weight: 500;
+      color: #0f172a;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .nav-btn:hover { background-color: #f3f4f6; }
+    .nav-btn.active {
+      background-color: #0f766e;
+      color: white;
+      box-shadow: 0 2px 5px rgba(15, 118, 110, 0.3);
+    }
+    .lang-select {
+      border: 1px solid #d1d5db;
+      border-radius: 0.4rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
-<body class="min-h-screen flex flex-col items-center py-8 px-4">
-  <!-- ✅ Header -->
-  <header class="bg-white shadow-sm sticky top-0 z-40 w-full">
-    <nav class="w-full px-6 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-2">
-        <img src="assets/logo.jpg" alt="CirclEats logo" class="w-10 h-10 rounded-xl">
-        <span class="text-xl font-bold text-teal-700">CirclEats</span>
+<body class="min-h-screen">
+  <!-- ✅ Navbar -->
+  <header class="navbar">
+    <nav>
+      <div class="brand">
+        <img src="assets/logo.jpg" alt="CirclEats Logo" />
+        <span>CirclEats</span>
       </div>
-
-      <div class="hidden md:flex gap-4">
-        <button onclick="switchView('donor-view')" class="nav-btn">Donor</button>
-        <button onclick="goToVolunteer()" class="nav-btn">Volunteer</button>
-        <button onclick="goToShelter()" class="nav-btn">Shelter</button>
-        <button onclick="goToProfile()" class="nav-btn">My Profile</button>
+      <div class="nav-links">
+        <button class="nav-btn active">Donor</button>
+        <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
+        <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
+        <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
       </div>
-
-      <!-- Language selector -->
-      <select id="lang-select" onchange="setLanguage(this.value)" class="border rounded-lg px-2 py-1 text-sm">
+      <select id="lang-select" class="lang-select">
         <option value="en">English</option>
         <option value="hi">हिन्दी</option>
         <option value="kn">ಕನ್ನಡ</option>
+        <option value="te">తెలుగు</option>
       </select>
     </nav>
   </header>
 
+  <!-- ✅ Page Header -->
+  <section class="text-center py-8">
+    <h1 class="text-4xl font-extrabold text-green-700">Donor Dashboard</h1>
+    <p class="text-gray-600">Create, view, and manage your food donations 🌱</p>
+  </section>
+
   <!-- ✅ Main Content -->
-  <main id="app" class="flex p-4 justify-center">
-    <!-- Donor -->
-    <section id="donor-view" class="w-full max-w-6xl flex flex-col gap-6">
-      <h1 class="text-4xl font-extrabold text-green-700 text-center">Donor Dashboard</h1>
-
-      <!-- Create Donation -->
-      <div class="bg-white shadow-xl rounded-2xl p-6">
-        <h2 class="text-2xl font-semibold text-green-600 mb-4">🧾 Create Donation</h2>
-
-        <form id="donation-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block mb-2 font-medium">🍲 Food Type</label>
-            <select id="food-type" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400">
-              <option value="">Select Type</option>
-              <option>Cooked Meals</option>
-              <option>Bakery Items</option>
-              <option>Fruits</option>
-              <option>Vegetables</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block mb-2 font-medium">🥗 Food Name (Optional)</label>
-            <input id="food-name" type="text" placeholder="E.g., Paneer Curry, Bread Loaf..." class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
-          </div>
-
-          <div>
-            <label class="block mb-2 font-medium">🍽 Quantity (Servings)</label>
-            <input id="quantity" type="number" min="1" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
-          </div>
-
-          <div>
-            <label class="block mb-2 font-medium">📅 Expiry Date/Time</label>
-            <input id="expiry" type="datetime-local" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
-          </div>
-
-          <!-- Image -->
-          <div>
-            <label class="block mb-2 font-medium">📸 Attach Image (Optional)</label>
-            <input type="file" id="food-image" accept="image/*" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
-            <div id="image-preview" class="mt-2 text-center"></div>
-          </div>
-
-          <!-- Location -->
-          <div class="md:col-span-2">
-            <label class="block mb-2 font-medium">📍 Location</label>
-            <input id="location-input" type="text" placeholder="Type an address or click on map" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400 mb-2" />
-            <div id="map"></div>
-            <p class="text-sm text-gray-500 mt-2 text-center">💡 Tip: Type or pick a location on the map.</p>
-          </div>
-
-          <div class="md:col-span-2 text-center">
-            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-xl shadow-md">➕ Create Listing</button>
-          </div>
-        </form>
-
-        <!-- Spinner -->
-        <div id="loading" class="hidden mt-4 text-center">
-          <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-green-600 mx-auto mb-2"></div>
-          <p class="text-green-700 font-medium">Creating your listing...</p>
+  <main class="max-w-6xl mx-auto space-y-8 px-4 pb-10">
+    <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-6 border border-green-100">
+      <h2 class="text-2xl font-semibold text-green-700 mb-4">🧾 Create Donation</h2>
+      <form id="donation-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block mb-2 font-medium">🍲 Food Type</label>
+          <select id="food-type" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400">
+            <option value="">Select Type</option>
+            <option>Cooked Meals</option>
+            <option>Bakery Items</option>
+            <option>Fruits</option>
+            <option>Vegetables</option>
+          </select>
         </div>
-      </div>
+        <div>
+          <label class="block mb-2 font-medium">🍽 Quantity</label>
+          <input id="quantity" type="number" min="1" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block mb-2 font-medium">📍 Location</label>
+          <input id="location-input" type="text" placeholder="Type address" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
+        </div>
+        <div class="md:col-span-2 text-center">
+          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-xl shadow-md">➕ Create Listing</button>
+        </div>
+      </form>
+    </div>
 
-      <!-- Listings -->
-      <section class="my-6">
-        <h2 class="text-2xl font-bold text-green-700 mb-3">📦 My Listings</h2>
-        <div id="listing-cards" class="space-y-3"></div>
-      </section>
-    </section>
-
-    <!-- Volunteer (hidden here, now separate page) -->
-    <section id="volunteer-view" class="view-card hidden">
-      <h2 class="section-title">Volunteer Dashboard</h2>
-      <div id="volunteer-container"></div>
-    </section>
-
-    <!-- Shelter (can remain empty if using separate page) -->
-    <section id="shelter-view" class="hidden"></section>
+    <div class="bg-white/90 rounded-2xl shadow-lg p-6 border border-green-100">
+      <h2 class="text-2xl font-semibold text-green-700 mb-3">📦 My Listings</h2>
+      <div id="listing-cards" class="space-y-3 text-gray-600">Loading...</div>
+    </div>
   </main>
 
-  <!-- ✅ Footer -->
-  <footer class="w-full bg-white shadow-inner py-4 text-center text-xs text-gray-500 fixed bottom-0 left-0">
-    © <span id="year"></span> CirclEats. All rights reserved.
+  <footer class="text-center text-gray-500 py-4 border-t mt-8">
+    © 2025 CirclEats | Empowering Generosity 💚
   </footer>
-  <script>
-    if (!localStorage.getItem("user_id")) {
-      alert("Please log in first!");
-      window.location.href = "login.html";
-    }
-  </script>
 
-  <!-- JS Files -->
-  <script src="js/utils.js"></script>
-  <script src="js/lang.js"></script>
   <script src="js/donor.js"></script>
-  <script src="js/volunteer.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/bg.js"></script>
-
-  <!-- ✅ Redirect + View Logic -->
-  <script>
-    // Switch view for Donor (same page)
-    function switchView(viewId) {
-      document.querySelectorAll("section[id$='-view']").forEach((section) => {
-        section.classList.add("hidden");
-      });
-      const activeSection = document.getElementById(viewId);
-      if (activeSection) activeSection.classList.remove("hidden");
-
-      if (viewId === "donor-view" && window.map) {
-        setTimeout(() => window.map.invalidateSize(), 300);
-      }
-    }
-
-    // ✅ Redirect to Volunteer Page
-    function goToVolunteer() {
-      window.location.href = "volunteer.html";
-    }
-
-    // ✅ Redirect to Shelter Page
-    function goToShelter() {
-      window.location.href = "shelter.html";
-    }
-
-    // ✅ Redirect to Profile Page
-    function goToProfile() {
-      window.location.href = "user-dashboard.html";
-    }
-
-    // Footer year
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // Default view
-    window.addEventListener("DOMContentLoaded", () => switchView("donor-view"));
-  </script>
 </body>
 </html>
-
