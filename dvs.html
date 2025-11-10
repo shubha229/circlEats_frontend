@@ -74,36 +74,29 @@
   <body class="min-h-screen flex flex-col items-center py-8 px-4">
     <!-- ✅ Header -->
     <header class="bg-white shadow-sm sticky top-0 z-40 w-full">
-      <nav class="w-full px-6 py-3 flex justify-between items-center">
-        <div class="flex items-center gap-2">
-          <img
-            src="assets/logo.jpg"
-            alt="CirclEats logo"
-            class="w-10 h-10 rounded-xl"
-          />
-          <span class="text-xl font-bold text-teal-700">CirclEats</span>
+      <!-- ✅ Navbar -->
+    <header class="navbar">
+      <nav>
+        <div class="brand">
+          <img src="assets/logo.jpg" alt="CirclEats Logo" />
+          <span>CirclEats</span>
         </div>
 
-        <div class="hidden md:flex gap-4">
-          <button onclick="switchView('donor-view')" class="nav-btn">
-            Donor
-          </button>
-          <button onclick="goToVolunteer()" class="nav-btn">Volunteer</button>
-          <button onclick="goToShelter()" class="nav-btn">Shelter</button>
-          <button onclick="goToProfile()" class="nav-btn">My Profile</button>
+        <div>
+          <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
+          <button class="nav-btn active">Volunteer</button>
+          <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
+          <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
         </div>
 
-        <!-- Language selector -->
-        <select
-          id="lang-select"
-          onchange="setLanguage(this.value)"
-          class="border rounded-lg px-2 py-1 text-sm"
-        >
+        <select id="lang-select" class="lang-select">
           <option value="en">English</option>
           <option value="hi">हिन्दी</option>
           <option value="kn">ಕನ್ನಡ</option>
+          <option value="te">తెలుగు</option>
         </select>
       </nav>
+    </header>
     </header>
 
     <!-- ✅ Main Content -->
@@ -285,3 +278,4 @@
     <script src="js/bg.js"></script>
   </body>
 </html>
+
