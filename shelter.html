@@ -83,21 +83,27 @@
 
 <body>
   <!-- ✅ Navbar -->
-  <header class="navbar">
-    <nav>
-      <div class="brand">
-        <img src="assets/logo.jpg" alt="CirclEats Logo" />
-        <span>CirclEats</span>
-      </div>
+    <header class="navbar">
+      <nav>
+        <div class="brand">
+          <img src="assets/logo.jpg" alt="CirclEats Logo" />
+          <span>CirclEats</span>
+        </div>
 
-      <div>
-        <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
-        <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
-        <button class="nav-btn active">Shelter</button>
-        <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
-      </div>
-    </nav>
-  </header>
+        <div>
+          <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
+          <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
+          <button class="nav-btn active">Shelter</button>
+          <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
+        </div>
+
+        <select id="lang-select" class="lang-select">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="kn">ಕನ್ನಡ</option>
+        </select>
+      </nav>
+    </header>
 
   <!-- ✅ Main -->
   <main class="max-w-4xl mx-auto p-4">
@@ -248,4 +254,5 @@
   </script>
 </body>
 </html>
+
 
