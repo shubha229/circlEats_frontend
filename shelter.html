@@ -143,22 +143,28 @@
   </head>
 
   <body>
+    <!-- ✅ Navbar -->
     <header class="navbar">
-    <nav>
-      <div class="brand"><img src="assets/logo.jpg"><span>CirclEats</span></div>
-      <div class="nav-links">
-        <button onclick="location.href='dvs.html'" class="nav-btn">Donor</button>
-        <button onclick="location.href='volunteer.html'" class="nav-btn">Volunteer</button>
-        <button class="nav-btn active">Shelter</button>
-        <button onclick="location.href='user-dashboard.html'" class="nav-btn">Profile</button>
-      </div>
-      <select class="lang-select">
-        <option>English</option>
-        <option>हिन्दी</option>
-        <option>ಕನ್ನಡ</option>
-        <option>తెలుగు</option>
-      </select>
-    </nav>
+      <nav>
+        <div class="brand">
+          <img src="assets/logo.jpg" alt="CirclEats Logo" />
+          <span>CirclEats</span>
+        </div>
+
+        <div>
+          <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
+          <button class="nav-btn active">Volunteer</button>
+          <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
+          <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
+        </div>
+
+        <select id="lang-select" class="lang-select">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="kn">ಕನ್ನಡ</option>
+          <option value="te">తెలుగు</option>
+        </select>
+      </nav>
     </header>
     
     <section class="py-6">
@@ -266,4 +272,5 @@
     </script>
   </body>
 </html>
+
 
