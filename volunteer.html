@@ -95,139 +95,40 @@
 
   <!-- ✅ Volunteer JS -->
   <script>
-    const API_BASE = "https://backend-circleats.onrender.com/api";
-
-    /* 🌍 Convert Lat/Lon to readable address */
-    async function reverseGeocode(coords) {
-      if (!coords || !coords.includes(",")) return "Not specified";
-      const [lat, lon] = coords.split(",").map((v) => v.trim());
-      try {
-        const res = await fetch(
-          \`https://nominatim.openstreetmap.org/reverse?format=json&lat=\${lat}&lon=\${lon}\`
-        );
-        const data = await res.json();
-        return data.display_name || coords;
-      } catch {
-        return coords;
-      }
-    }
-
-    /* 🟢 Load delivery requests */
-    async function loadDeliveryRequests() {
-      try {
-        const res = await fetch(\`\${API_BASE}/shelter_requests\`);
-        const data = await res.json();
-        const container = document.getElementById("deliveryRequests");
-        container.innerHTML = "";
-
-        if (!data.length) {
-          container.innerHTML =
-            "<p class='text-gray-500 text-center col-span-2'>No new delivery requests right now.</p>";
-          return;
-        }
-
-        for (const d of data) {
-          const shelterInfo = d.shelter_request || {};
-          const locationText = await reverseGeocode(shelterInfo.location);
-
-          const card = document.createElement("div");
-          card.className = "card border-l-4 border-blue-500";
-          card.innerHTML = `
-            <div class="tag">Requested</div>
-            <h3 class="text-xl font-semibold text-blue-700 mb-1">${d.item}</h3>
-            <p><strong>Quantity:</strong> ${d.quantity}</p>
-            <p><strong>Pickup From:</strong> ${d.location}</p>
-            <p><strong>Deliver To Shelter:</strong> ${shelterInfo.email || "N/A"}</p>
-            <p><strong>Shelter Location:</strong> ${locationText}</p>
-            <div class="mt-4">
-              <button class="accept-btn" onclick="acceptDelivery('${d._id}')">
-                ✅ Accept This Delivery
-              </button>
-            </div>
-          `;
-          container.appendChild(card);
-        }
-      } catch (err) {
-        console.error("Error loading requests:", err);
-        document.getElementById("deliveryRequests").innerHTML =
-          "<p class='text-red-600 col-span-2'>Error loading requests. Please refresh.</p>";
-      }
-    }
-
-    /* 🟢 Accept delivery */
-    async function acceptDelivery(id) {
-      const volunteer = localStorage.getItem("email");
-      if (!volunteer) {
-        alert("⚠️ Please log in as a volunteer first!");
-        return;
-      }
-
-      try {
-        const res = await fetch(\`\${API_BASE}/accept_delivery/\${id}\`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ volunteer }),
-        });
-
-        const data = await res.json();
-        if (res.ok) {
-          alert(data.message || "✅ Delivery accepted successfully!");
-          loadDeliveryRequests();
-          loadMyDeliveries();
-        } else {
-          alert("⚠️ " + (data.error || "Could not accept this delivery."));
-        }
-      } catch (err) {
-        console.error("Error accepting delivery:", err);
-        alert("❌ Server error. Please try again.");
-      }
-    }
-
-    /* 🟢 Load accepted deliveries */
     async function loadMyDeliveries() {
       const email = localStorage.getItem("email");
       if (!email) return;
-
-      try {
-        const res = await fetch(\`\${API_BASE}/donations\`);
-        const data = await res.json();
-        const container = document.getElementById("myDeliveries");
-        container.innerHTML = "";
-
-        const my = data.filter((d) => d.collected_by === email);
-        if (!my.length) {
-          container.innerHTML =
-            "<p class='text-gray-500 text-center col-span-2'>No deliveries accepted yet.</p>";
-          return;
-        }
-
-        for (const d of my) {
-          const locationText = await reverseGeocode(
-            d.shelter_request?.location || d.shelter_location
-          );
-
-          const card = document.createElement("div");
-          card.className = "card border-l-4 border-emerald-500 bg-gray-50";
-          card.innerHTML = `
-            <div class="tag bg-emerald-600">In Transit</div>
-            <h3 class="text-lg font-semibold text-emerald-700 mb-1">${d.item}</h3>
-            <p><strong>Quantity:</strong> ${d.quantity}</p>
-            <p><strong>Delivering To:</strong> ${d.donated_to || d.shelter_request?.email}</p>
-            <p><strong>Destination:</strong> ${locationText}</p>
-            <p><strong>Current Status:</strong> ${d.status}</p>
-          `;
-          container.appendChild(card);
-        }
-      } catch (err) {
-        console.error("Error loading deliveries:", err);
+    
+      const res = await fetch(`${API_BASE}/donations`);
+      const data = await res.json();
+      const container = document.getElementById("myDeliveries");
+      container.innerHTML = "";
+    
+      const accepted = data.filter((d) => d.collected_by === email);
+      if (!accepted.length) {
+        container.innerHTML = "<p>No deliveries accepted yet.</p>";
+        return;
       }
+    
+      accepted.forEach((d) => {
+        const div = document.createElement("div");
+        div.className =
+          "p-4 border-l-4 border-green-600 rounded-lg shadow-sm bg-gray-50";
+        div.innerHTML = `
+          <h3 class="text-lg font-semibold text-green-700">${d.item}</h3>
+          <p><strong>Status:</strong> ${d.status}</p>
+          <p><strong>Shelter:</strong> ${d.donated_to || d.shelter_request?.email}</p>
+        `;
+        container.appendChild(div);
+      });
     }
-
-    /* 🔹 Init */
+    
+    // Call it after loading requests
     window.addEventListener("DOMContentLoaded", () => {
       loadDeliveryRequests();
       loadMyDeliveries();
     });
+
   </script>
 </body>
 </html>
