@@ -192,32 +192,18 @@
       </nav>
     </header>
 
-    <!-- ✅ Page Title -->
-    <header class="page-header">
-      <h1>Volunteer Dashboard</h1>
-    </header>
-
-    <!-- ✅ Map Section -->
-    <section>
-      <h2>📍 Your Current Location</h2>
-      <div id="map"></div>
-    </section>
-
-    <!-- ✅ Shelter Requests -->
-    <section>
-      <h2>🏠 Shelter Requests</h2>
-      <div id="shelterRequests" class="text-center text-gray-500">
-        <p>Loading shelter requests...</p>
+    <main class="max-w-5xl mx-auto p-4">
+      <h1 class="text-3xl font-bold text-blue-700 text-center mb-6">
+        Volunteer Dashboard
+      </h1>
+    
+      <!-- Delivery Requests -->
+      <div class="bg-white shadow-md rounded-xl p-4">
+        <h2 class="text-xl font-semibold mb-3">🚚 Available Delivery Requests</h2>
+        <div id="deliveryRequests" class="space-y-3 text-gray-700">Loading requests...</div>
       </div>
-    </section>
+    </main>
 
-    <!-- ✅ My Accepted Deliveries -->
-    <section>
-      <h2>🚚 My Accepted Deliveries</h2>
-      <div id="myDeliveries" class="text-center text-gray-500">
-        <p>No deliveries accepted yet.</p>
-      </div>
-    </section>
 
     <!-- ✅ Footer -->
     <footer>
