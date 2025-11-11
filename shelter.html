@@ -188,32 +188,42 @@
     <script>
     const BASE_URL = "http://localhost:7860";
     
-    // Load pending donations
+    // Load only pending donations
     async function loadAvailableDonations() {
-      const res = await fetch(`${BASE_URL}/api/donations`);
-      const data = await res.json();
-      const container = document.getElementById("availableDonations");
-      container.innerHTML = "";
+      try {
+        const res = await fetch(`${BASE_URL}/api/donations`);
+        const data = await res.json();
+        const container = document.getElementById("availableDonations");
+        container.innerHTML = "";
     
-      const pending = data.filter(d => d.status === "Pending");
-      if (!pending.length) {
-        container.innerHTML = "<p style='color:#6b7280;text-align:center;'>No food donations available right now.</p>";
-        return;
+        // 🟢 Filter only donations that are still available
+        const pending = data.filter(
+          (d) => d.status === "Pending" && !d.collected_by && !d.donated_to
+        );
+    
+        if (!pending.length) {
+          container.innerHTML = `
+            <p style="color:#6b7280;text-align:center;">No food donations available right now.</p>
+          `;
+          return;
+        }
+    
+        pending.forEach((donation) => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <h3 style="color:#0f766e;font-weight:700;">${donation.item || "Unnamed Food"} (${donation.quantity || "N/A"})</h3>
+            <p>📍 ${donation.location || "Unknown location"}</p>
+            <button class="accept-btn" onclick="acceptFood('${donation._id}')">Accept This Food</button>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Error fetching donations:", err);
       }
-    
-      pending.forEach(donation => {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `
-          <h3 style="color:#0f766e;font-weight:700;">${donation.item} (${donation.quantity})</h3>
-          <p>📍 ${donation.location}</p>
-          <button class="accept-btn" onclick="acceptFood('${donation._id}')">Accept This Food</button>
-        `;
-        container.appendChild(div);
-      });
     }
     
-    // Accept a donation
+    // Shelter accepts a donation
     async function acceptFood(id) {
       const location = prompt("Enter your shelter location:");
       const email = localStorage.getItem("email");
@@ -225,7 +235,7 @@
       const res = await fetch(`${BASE_URL}/api/shelter_request/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shelter: email, location })
+        body: JSON.stringify({ shelter: email, location }),
       });
     
       const result = await res.json();
@@ -233,7 +243,7 @@
       loadAvailableDonations();
     }
     
-    // Fetch notifications
+    // Poll for notifications every 15s
     async function fetchNotifications() {
       const email = localStorage.getItem("email");
       if (!email) return;
@@ -245,9 +255,9 @@
       }
     }
     
-    // Toast notification
+    // Toast popup
     function showToast(msg) {
-      let toast = document.createElement("div");
+      const toast = document.createElement("div");
       toast.textContent = msg;
       toast.style.position = "fixed";
       toast.style.bottom = "30px";
@@ -263,14 +273,13 @@
       setTimeout(() => toast.remove(), 4000);
     }
     
-    // Poll every 15 seconds
     setInterval(fetchNotifications, 15000);
-    
-    // Initial load
     loadAvailableDonations();
     </script>
+
   </body>
 </html>
+
 
 
 
