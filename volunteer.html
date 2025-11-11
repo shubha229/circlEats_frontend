@@ -1,294 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Volunteer Dashboard | CirclEats</title>
-    <link rel="icon" type="image/png" href="assets/logo.jpg" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CirclEats | Volunteer Dashboard</title>
+  <link rel="icon" href="assets/logo.jpg" />
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-      body {
-        margin: 0;
-        font-family: "Inter", sans-serif;
-        background: linear-gradient(135deg, #f0fdf4, #eff6ff);
-        color: #1f2937;
-      }
+  <style>
+    body {
+      background: linear-gradient(135deg, #ecfdf5, #e0f2fe);
+      font-family: "Inter", sans-serif;
+    }
+    .card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    .accept-btn {
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      transition: 0.25s;
+    }
+    .accept-btn:hover {
+      background: #1d4ed8;
+    }
+    .tag {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: #3b82f6;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
 
-      /* ===== Navbar ===== */
-      header.navbar {
-        background-color: #ffffff;
-        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-      }
-
-      .navbar nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.8rem 1.5rem;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-      }
-
-      .brand img {
-        width: 42px;
-        height: 42px;
-        border-radius: 0.5rem;
-      }
-
-      .brand span {
-        font-weight: 700;
-        color: #0f766e;
-        font-size: 1.3rem;
-      }
-
-      .nav-btn {
-        padding: 0.45rem 0.9rem;
-        border-radius: 0.5rem;
-        background: none;
-        border: none;
-        font-weight: 500;
-        cursor: pointer;
-        color: #0f172a;
-        transition: all 0.2s ease;
-      }
-
-      .nav-btn:hover {
-        background-color: #f3f4f6;
-      }
-
-      .nav-btn.active {
-        background-color: #0f766e;
-        color: white;
-      }
-
-      .lang-select {
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.85rem;
-      }
-
-      /* ===== Page Header ===== */
-      .page-header {
-        text-align: center;
-        padding: 1rem 0.5rem;
-        margin-bottom: 1rem;
-      }
-
-      .page-header h1 {
-        font-size: 2rem;
-        font-weight: 800;
-        color: #0f766e;
-        margin: 0;
-      }
-
-      /* ===== Sections ===== */
-      section {
-        width: 90%;
-        max-width: 900px;
-        margin: 1.5rem auto;
-        background: #ffffff;
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      }
-
-      section h2 {
-        text-align: center;
-        color: #0f766e;
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-      }
-
-      /* ===== Pickup Cards ===== */
-      .pickup-card {
-        background-color: #ffffff;
-        border-left: 4px solid #10b981;
-        border-radius: 0.75rem;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-
-      .pickup-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
-      }
-
-      .pickup-card h3 {
-        margin: 0 0 0.4rem 0;
-        font-size: 1.2rem;
-        color: #065f46;
-      }
-
-      .pickup-card p {
-        margin: 0.25rem 0;
-        font-size: 0.95rem;
-        color: #374151;
-      }
-
-      .pickup-card button {
-        background-color: #0f766e;
-        color: white;
-        border: none;
-        padding: 0.6rem 1rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        font-weight: 600;
-        margin-top: 0.6rem;
-        transition: 0.2s;
-      }
-
-      .pickup-card button:hover {
-        background-color: #115e59;
-      }
-
-      footer {
-        text-align: center;
-        padding: 1rem;
-        font-size: 0.9rem;
-        color: #6b7280;
-        margin-top: 2rem;
-      }
-    </style>
-  </head>
-
-  <body>
-    <!-- ✅ Navbar -->
-    <header class="navbar">
-      <nav>
-        <div class="brand">
-          <img src="assets/logo.jpg" alt="CirclEats Logo" />
-          <span>CirclEats</span>
-        </div>
-
-        <div>
-          <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
-          <button class="nav-btn active">Volunteer</button>
-          <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
-          <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
-        </div>
-
-        <select id="lang-select" class="lang-select">
-          <option value="en">English</option>
-          <option value="hi">हिन्दी</option>
-          <option value="kn">ಕನ್ನಡ</option>
-        </select>
-      </nav>
-    </header>
-
-    <main class="max-w-5xl mx-auto p-4">
-      <h1 class="text-3xl font-bold text-blue-700 text-center mb-6">
-        Volunteer Dashboard
-      </h1>
-    
-      <!-- Delivery Requests -->
-      <div class="bg-white shadow-md rounded-xl p-4">
-        <h2 class="text-xl font-semibold mb-3">🚚 Available Delivery Requests</h2>
-        <div id="deliveryRequests" class="space-y-3 text-gray-700">Loading requests...</div>
+<body>
+  <!-- ✅ Navbar -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="flex justify-between items-center px-6 py-3">
+      <div class="flex items-center gap-2">
+        <img src="assets/logo.jpg" alt="CirclEats Logo" class="w-10 h-10 rounded-lg" />
+        <span class="text-2xl font-bold text-emerald-700">CirclEats</span>
       </div>
-    </main>
+      <div>
+        <button onclick="window.location.href='dvs.html'" class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">Donor</button>
+        <button class="px-4 py-2 rounded-md bg-emerald-600 text-white font-semibold shadow-sm">Volunteer</button>
+        <button onclick="window.location.href='shelter.html'" class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">Shelter</button>
+        <button onclick="window.location.href='user-dashboard.html'" class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">Profile</button>
+      </div>
+    </nav>
+  </header>
 
+  <!-- ✅ Main -->
+  <main class="max-w-5xl mx-auto p-6">
+    <h1 class="text-4xl font-extrabold text-blue-700 text-center mb-6">Volunteer Dashboard</h1>
 
-    <!-- ✅ Footer -->
-    <footer>
-      © 2025 CirclEats | Empowering Volunteers to Feed Communities 💚
-    </footer>
+    <section class="bg-white shadow-lg rounded-2xl p-6 mb-8">
+      <h2 class="text-2xl font-semibold text-blue-700 mb-3 flex items-center gap-2">
+        🚚 Available Delivery Requests
+      </h2>
+      <div id="deliveryRequests" class="space-y-4 text-gray-700">Loading requests...</div>
+    </section>
 
-    <!-- ✅ JS -->
-    <script>
-      "use strict";
-      const API_BASE = "https://backend-circleats.onrender.com/api";
-      
-      // 🔹 Load delivery requests (requested by shelters)
-      async function loadDeliveryRequests() {
-        try {
-          const res = await fetch(`${API_BASE}/shelter_requests`);
-          const data = await res.json();
-      
-          const container = document.getElementById("deliveryRequests");
-          container.innerHTML = "";
-      
-          // 🟢 Filter only requests waiting for volunteers
-          if (!data.length) {
-            container.innerHTML = `<p class="text-gray-500 text-center">No new delivery requests yet.</p>`;
-            return;
-          }
-      
-          data.forEach((d) => {
-            const shelterInfo = d.shelter_request || {};
-            const div = document.createElement("div");
-            div.className =
-              "p-4 border-l-4 border-blue-500 rounded-lg shadow-sm bg-white";
-            div.innerHTML = `
-              <h3 class="text-lg font-semibold text-blue-700">${d.item}</h3>
-              <p><strong>Quantity:</strong> ${d.quantity}</p>
-              <p><strong>Pickup From:</strong> ${d.location}</p>
-              <p><strong>Deliver To Shelter:</strong> ${shelterInfo.email || "N/A"}</p>
-              <p><strong>Shelter Location:</strong> ${shelterInfo.location || "Not specified"}</p>
-              <div class="mt-3">
-                <button
-                  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-                  onclick="acceptDelivery('${d._id}')"
-                >
-                  ✅ Accept This Delivery
-                </button>
-              </div>
-            `;
-            container.appendChild(div);
-          });
-        } catch (err) {
-          console.error("Error loading delivery requests:", err);
-          document.getElementById("deliveryRequests").innerHTML =
-            "<p class='text-red-600'>Error loading data. Please refresh.</p>";
-        }
-      }
-      
-      // 🔹 Accept a delivery request
-      async function acceptDelivery(id) {
-        const volunteer = localStorage.getItem("email");
-        if (!volunteer) {
-          alert("⚠️ Please log in as a volunteer first!");
+    <section class="bg-white shadow-lg rounded-2xl p-6">
+      <h2 class="text-2xl font-semibold text-emerald-700 mb-3 flex items-center gap-2">
+        📦 My Accepted Deliveries
+      </h2>
+      <div id="myDeliveries" class="space-y-4 text-gray-700"></div>
+    </section>
+  </main>
+
+  <footer class="text-center text-gray-500 py-6 text-sm">
+    © 2025 CirclEats | Empowering Volunteers to Feed Communities 💚
+  </footer>
+
+  <!-- ✅ Volunteer JS -->
+  <script>
+    const API_BASE = "https://backend-circleats.onrender.com/api";
+
+    // 🟢 Load delivery requests
+    async function loadDeliveryRequests() {
+      try {
+        const res = await fetch(\`\${API_BASE}/shelter_requests\`);
+        const data = await res.json();
+        const container = document.getElementById("deliveryRequests");
+        container.innerHTML = "";
+
+        if (!data.length) {
+          container.innerHTML =
+            "<p class='text-gray-500 text-center'>No new delivery requests right now.</p>";
           return;
         }
-      
-        try {
-          const res = await fetch(`${API_BASE}/accept_delivery/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ volunteer }),
-          });
-      
-          const data = await res.json();
-          if (res.ok) {
-            alert(data.message || "✅ Delivery accepted!");
-            loadDeliveryRequests(); // Refresh list
-          } else {
-            alert("⚠️ " + (data.error || "Unable to accept this delivery."));
-          }
-        } catch (err) {
-          console.error("Error accepting delivery:", err);
-          alert("❌ Server error while processing your request.");
-        }
-      }
-      
-      // 🔹 Initialize
-      window.addEventListener("DOMContentLoaded", loadDeliveryRequests);
 
-    </script>
-  </body>
+        data.forEach((d) => {
+          const shelterInfo = d.shelter_request || {};
+          const div = document.createElement("div");
+          div.className = "card border-l-4 border-blue-500";
+          div.innerHTML = \`
+            <div class="tag">Requested</div>
+            <h3 class="text-xl font-semibold text-blue-700 mb-1">\${d.item}</h3>
+            <p><strong>Quantity:</strong> \${d.quantity}</p>
+            <p><strong>Pickup From:</strong> \${d.location}</p>
+            <p><strong>Deliver To:</strong> \${shelterInfo.email || "N/A"}</p>
+            <p><strong>Shelter Location:</strong> \${shelterInfo.location || "Not specified"}</p>
+            <div class="mt-4">
+              <button class="accept-btn" onclick="acceptDelivery('\${d._id}')">
+                ✅ Accept This Delivery
+              </button>
+            </div>
+          \`;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Error loading requests:", err);
+        document.getElementById("deliveryRequests").innerHTML =
+          "<p class='text-red-600'>Error loading requests. Please refresh.</p>";
+      }
+    }
+
+    // 🟢 Accept delivery
+    async function acceptDelivery(id) {
+      const volunteer = localStorage.getItem("email");
+      if (!volunteer) {
+        alert("⚠️ Please log in as a volunteer first!");
+        return;
+      }
+
+      try {
+        const res = await fetch(\`\${API_BASE}/accept_delivery/\${id}\`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ volunteer }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message || "✅ Delivery accepted successfully!");
+          loadDeliveryRequests();
+          loadMyDeliveries();
+        } else {
+          alert("⚠️ " + (data.error || "Could not accept this delivery."));
+        }
+      } catch (err) {
+        console.error("Error accepting delivery:", err);
+        alert("❌ Server error. Please try again.");
+      }
+    }
+
+    // 🟢 Load accepted deliveries
+    async function loadMyDeliveries() {
+      const email = localStorage.getItem("email");
+      if (!email) return;
+
+      try {
+        const res = await fetch(\`\${API_BASE}/donations\`);
+        const data = await res.json();
+        const container = document.getElementById("myDeliveries");
+        container.innerHTML = "";
+
+        const my = data.filter((d) => d.collected_by === email);
+        if (!my.length) {
+          container.innerHTML =
+            "<p class='text-gray-500 text-center'>No deliveries accepted yet.</p>";
+          return;
+        }
+
+        my.forEach((d) => {
+          const div = document.createElement("div");
+          div.className = "card border-l-4 border-emerald-500 bg-gray-50";
+          div.innerHTML = \`
+            <div class="tag bg-emerald-600">In Transit</div>
+            <h3 class="text-lg font-semibold text-emerald-700 mb-1">\${d.item}</h3>
+            <p><strong>Quantity:</strong> \${d.quantity}</p>
+            <p><strong>Delivering To:</strong> \${d.donated_to || d.shelter_request?.email}</p>
+            <p><strong>Current Status:</strong> \${d.status}</p>
+          \`;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Error loading deliveries:", err);
+      }
+    }
+
+    // 🔹 Init
+    window.addEventListener("DOMContentLoaded", () => {
+      loadDeliveryRequests();
+      loadMyDeliveries();
+    });
+  </script>
+</body>
 </html>
