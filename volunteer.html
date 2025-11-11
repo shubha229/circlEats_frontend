@@ -113,14 +113,6 @@
         margin-bottom: 1rem;
       }
 
-      /* ===== Map ===== */
-      #map {
-        width: 100%;
-        height: 320px;
-        border-radius: 0.75rem;
-        border: 1px solid #e5e7eb;
-      }
-
       /* ===== Pickup Cards ===== */
       .pickup-card {
         background-color: #ffffff;
@@ -158,13 +150,13 @@
         cursor: pointer;
         font-weight: 600;
         margin-top: 0.6rem;
+        transition: 0.2s;
       }
 
       .pickup-card button:hover {
         background-color: #115e59;
       }
 
-      /* ===== Footer ===== */
       footer {
         text-align: center;
         padding: 1rem;
@@ -211,11 +203,11 @@
       <div id="map"></div>
     </section>
 
-    <!-- ✅ Available Pickups -->
+    <!-- ✅ Shelter Requests -->
     <section>
-      <h2>🍽 Available Pickups</h2>
-      <div id="donationList" class="text-center text-gray-500">
-        <p>Loading available donations...</p>
+      <h2>🏠 Shelter Requests</h2>
+      <div id="shelterRequests" class="text-center text-gray-500">
+        <p>Loading shelter requests...</p>
       </div>
     </section>
 
@@ -232,7 +224,105 @@
       © 2025 CirclEats | Empowering Volunteers to Feed Communities 💚
     </footer>
 
-    <!-- ✅ Script -->
-    <script src="js/volunteer.js"></script>
+    <!-- ✅ JS -->
+    <script>
+      const BASE_URL = "http://localhost:7860";
+
+      // Load map
+      const map = new ol.Map({
+        target: "map",
+        layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
+        view: new ol.View({
+          center: ol.proj.fromLonLat([77.5946, 12.9716]),
+          zoom: 11,
+        }),
+      });
+
+      // Fetch and display shelter requests
+      async function loadShelterRequests() {
+        const res = await fetch(`${BASE_URL}/api/shelter_requests`);
+        const data = await res.json();
+        const container = document.getElementById("shelterRequests");
+        container.innerHTML = "";
+
+        if (!data.length) {
+          container.textContent = "No active shelter requests.";
+          return;
+        }
+
+        data.forEach((req) => {
+          const div = document.createElement("div");
+          div.className = "pickup-card";
+          div.innerHTML = `
+            <h3>${req.item} (${req.quantity})</h3>
+            <p>📍 Deliver to: ${req.shelter_request?.location || "Not specified"}</p>
+            <button onclick="acceptDelivery('${req._id}')">Accept Delivery</button>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      // Volunteer accepts delivery
+      async function acceptDelivery(id) {
+        const volunteer = localStorage.getItem("email");
+        if (!volunteer) return alert("Login required!");
+
+        const res = await fetch(`${BASE_URL}/api/accept_delivery/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ volunteer }),
+        });
+
+        const result = await res.json();
+        alert(result.message);
+        loadShelterRequests();
+        loadMyDeliveries();
+      }
+
+      // Load accepted deliveries
+      async function loadMyDeliveries() {
+        const volunteer = localStorage.getItem("email");
+        if (!volunteer) return;
+        const res = await fetch(`${BASE_URL}/api/donations`);
+        const data = await res.json();
+        const container = document.getElementById("myDeliveries");
+        container.innerHTML = "";
+
+        const deliveries = data.filter(
+          (d) => d.collected_by === volunteer && d.status === "In Transit"
+        );
+
+        if (!deliveries.length) {
+          container.textContent = "No active deliveries yet.";
+          return;
+        }
+
+        deliveries.forEach((d) => {
+          const div = document.createElement("div");
+          div.className = "pickup-card";
+          div.innerHTML = `
+            <h3>${d.item} (${d.quantity})</h3>
+            <p>🏠 Deliver to: ${d.shelter_request?.location || "Not specified"}</p>
+            <button onclick="markDelivered('${d._id}')">Mark as Delivered</button>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      // Mark delivery complete
+      async function markDelivered(id) {
+        const res = await fetch(`${BASE_URL}/api/donate_to_shelter/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "Delivered" }),
+        });
+        const result = await res.json();
+        alert(result.message);
+        loadMyDeliveries();
+      }
+
+      loadShelterRequests();
+      loadMyDeliveries();
+    </script>
   </body>
 </html>
