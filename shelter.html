@@ -19,6 +19,7 @@
       font-family: "Inter", sans-serif;
       color: #1f2937;
     }
+    /* ===== Navbar ===== */
     header.navbar {
       background-color: #ffffff;
       box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
@@ -32,11 +33,13 @@
       align-items: center;
       padding: 0.8rem 1.5rem;
     }
+
     .brand {
       display: flex;
       align-items: center;
       gap: 0.6rem;
     }
+
     .brand img {
       width: 42px;
       height: 42px;
@@ -47,6 +50,7 @@
       color: #0f766e;
       font-size: 1.3rem;
     }
+
     .nav-btn {
       padding: 0.45rem 0.9rem;
       border-radius: 0.5rem;
@@ -57,8 +61,22 @@
       color: #0f172a;
       transition: all 0.2s ease;
     }
-    .nav-btn:hover { background-color: #f3f4f6; }
-    .nav-btn.active { background-color: #0f766e; color: white; }
+
+    .nav-btn:hover {
+      background-color: #f3f4f6;
+    }
+
+    .nav-btn.active {
+      background-color: #0f766e;
+      color: white;
+    }
+
+    .lang-select {
+      border: 1px solid #d1d5db;
+       border-radius: 0.375rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.85rem;
+    }
     #map { height: 300px; border-radius: 0.75rem; border: 1px solid #d1d5db; }
   </style>
 </head>
@@ -230,3 +248,4 @@
   </script>
 </body>
 </html>
+
