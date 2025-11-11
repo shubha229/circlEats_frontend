@@ -1,162 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CirclEats | Shelter Dashboard</title>
-<link rel="icon" href="assets/logo.jpg">
-<style>
-body { margin:0; font-family:"Inter",sans-serif; background:linear-gradient(135deg,#e0f2fe,#ecfdf5,#f0fdf4); color:#1f2937; }
-header.navbar { background-color:#ffffff; box-shadow:0 1px 6px rgba(0,0,0,0.05); position:sticky; top:0; z-index:100; }
-.navbar nav { display:flex; justify-content:space-between; align-items:center; padding:0.8rem 1.5rem; }
-.brand { display:flex; align-items:center; gap:0.6rem; }
-.brand img { width:42px; height:42px; border-radius:0.5rem; }
-.brand span { font-weight:700; color:#0f766e; font-size:1.3rem; }
-.nav-btn { padding:0.45rem 0.9rem; border-radius:0.5rem; background:none; border:none; font-weight:500; cursor:pointer; color:#0f172a; transition:all 0.2s ease; }
-.nav-btn:hover { background-color:#f3f4f6; }
-.nav-btn.active { background-color:#0f766e; color:white; }
-.lang-select { border:1px solid #d1d5db; border-radius:0.375rem; padding:0.25rem 0.5rem; font-size:0.85rem; }
-h1 { font-size:2.5rem; font-weight:800; color:#0f766e; margin:0.5rem 0; text-align:center; }
-main { max-width:900px; margin:auto; padding:1rem; }
-.card { background:#ffffffb3; backdrop-filter:blur(8px); border:1px solid #bbf7d0; border-radius:1rem; padding:1.5rem; box-shadow:0 4px 10px rgba(0,0,0,0.05); margin-bottom:1.5rem; }
-#map { width:100%; height:350px; border-radius:0.75rem; border:1px solid #d1d5db; }
-button.accept-btn { background:#0f766e; color:#fff; border:none; padding:0.6rem 1.2rem; border-radius:0.6rem; cursor:pointer; font-weight:600; transition:0.25s; }
-button.accept-btn:hover { background:#115e59; }
-footer { text-align:center; color:#6b7280; padding:1rem; border-top:1px solid #e5e7eb; margin-top:2rem; }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CirclEats | Shelter Dashboard</title>
+  <link rel="icon" href="assets/logo.jpg" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- OpenLayers -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css" />
+  <script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #e0f2fe, #ecfdf5, #f0fdf4);
+      font-family: "Inter", sans-serif;
+      color: #1f2937;
+    }
+    header.navbar {
+      background-color: #ffffff;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1.5rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 0.5rem;
+    }
+    .brand span {
+      font-weight: 700;
+      color: #0f766e;
+      font-size: 1.3rem;
+    }
+    .nav-btn {
+      padding: 0.45rem 0.9rem;
+      border-radius: 0.5rem;
+      background: none;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      color: #0f172a;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover { background-color: #f3f4f6; }
+    .nav-btn.active { background-color: #0f766e; color: white; }
+    #map { height: 300px; border-radius: 0.75rem; border: 1px solid #d1d5db; }
+  </style>
 </head>
 
 <body>
-<header class="navbar">
-<nav>
-  <div class="brand"><img src="assets/logo.jpg" alt="CirclEats Logo"><span>CirclEats</span></div>
-  <div>
-    <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
-    <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
-    <button class="nav-btn active">Shelter</button>
-    <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
-  </div>
-  <select id="lang-select" class="lang-select">
-    <option value="en">English</option>
-    <option value="hi">हिन्दी</option>
-    <option value="kn">ಕನ್ನಡ</option>
-  </select>
-</nav>
-</header>
+  <!-- ✅ Navbar -->
+  <header class="navbar">
+    <nav>
+      <div class="brand">
+        <img src="assets/logo.jpg" alt="CirclEats Logo" />
+        <span>CirclEats</span>
+      </div>
 
-<section class="py-6">
-  <h1>Shelter Dashboard</h1>
-</section>
+      <div>
+        <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
+        <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
+        <button class="nav-btn active">Shelter</button>
+        <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
+      </div>
+    </nav>
+  </header>
 
-<main>
-  <div class="card">
-    <h2>📍 Select Shelter Location</h2>
-    <div id="map"></div>
-    <p style="font-size:.9rem;color:#6b7280;margin-top:.5rem;text-align:center;">Click on map to set shelter location.</p>
-  </div>
+  <!-- ✅ Main -->
+  <main class="max-w-4xl mx-auto p-4">
+    <h1 class="text-3xl font-bold text-green-700 text-center mb-6">Shelter Dashboard</h1>
 
-  <div class="card">
-    <h2>🍱 Food Ready for Donation</h2>
-    <div id="availableDonations">Loading available donations…</div>
-  </div>
-</main>
+    <!-- Map -->
+    <div class="bg-white shadow-md rounded-xl p-4 mb-6">
+      <h2 class="text-xl font-semibold mb-2">📍 Select Shelter Location</h2>
+      <div id="map"></div>
+      <p class="text-sm text-gray-500 text-center mt-2">
+        Click on the map to set your delivery location or allow GPS for auto-location.
+      </p>
+    </div>
 
-<footer>© 2025 CirclEats | Nourishing Communities 💚</footer>
+    <!-- Available Donations -->
+    <div class="bg-white shadow-md rounded-xl p-4">
+      <h2 class="text-xl font-semibold mb-3">🍱 Food Ready for Donation</h2>
+      <div id="availableDonations" class="space-y-3 text-gray-700">Loading available donations...</div>
+    </div>
+  </main>
 
-<script>
-const BASE_URL = "https://circleats-backend.onrender.com";
-let selectedLocation = "";
+  <footer class="text-center text-sm text-gray-500 py-4">
+    © 2025 CirclEats | Nourishing Communities 💚
+  </footer>
 
-// 🌍 Setup map click + live location
-function setupMap() {
-  const map = new ol.Map({
-    target: "map",
-    layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
-    view: new ol.View({
-      center: ol.proj.fromLonLat([77.5946, 12.9716]),
-      zoom: 11,
-    }),
-  });
+  <!-- ✅ Shelter JS -->
+  <script>
+    const API_BASE = "https://backend-circleats.onrender.com/api";
+    let selectedLocation = "";
 
-  map.on("click", (evt) => {
-    const coord = ol.proj.toLonLat(evt.coordinate);
-    selectedLocation = `${coord[1].toFixed(4)}, ${coord[0].toFixed(4)}`;
-    alert("📍 Location set to: " + selectedLocation);
-  });
+    // 🌍 Initialize map
+    function initMap() {
+      const map = new ol.Map({
+        target: "map",
+        layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
+        view: new ol.View({
+          center: ol.proj.fromLonLat([77.5946, 12.9716]),
+          zoom: 12,
+        }),
+      });
 
-  if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const lon = pos.coords.longitude;
-      const lat = pos.coords.latitude;
-      selectedLocation = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-      const coords = ol.proj.fromLonLat([lon, lat]);
-      map.getView().setCenter(coords);
-      map.getView().setZoom(14);
+      map.on("click", (evt) => {
+        const coord = ol.proj.toLonLat(evt.coordinate);
+        selectedLocation = `${coord[1].toFixed(4)}, ${coord[0].toFixed(4)}`;
+        alert("📍 Shelter location set to: " + selectedLocation);
+      });
+
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const lon = pos.coords.longitude;
+          const lat = pos.coords.latitude;
+          selectedLocation = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+          const coords = ol.proj.fromLonLat([lon, lat]);
+          map.getView().setCenter(coords);
+          map.getView().setZoom(14);
+        });
+      }
+    }
+
+    // 🥗 Load pending donations
+    async function loadAvailableDonations() {
+      try {
+        const res = await fetch(`${API_BASE}/donations`);
+        const data = await res.json();
+        const container = document.getElementById("availableDonations");
+        container.innerHTML = "";
+
+        // 🟢 Filter only pending donations
+        const pending = data.filter((d) => (d.status || "").toLowerCase() === "pending");
+        if (!pending.length) {
+          container.innerHTML = `<p class="text-gray-500 text-center">No pending donations available right now.</p>`;
+          return;
+        }
+
+        // Render each card
+        pending.forEach((d) => {
+          const div = document.createElement("div");
+          div.className = "p-4 border-l-4 border-green-600 rounded-lg shadow-sm bg-white";
+          div.innerHTML = `
+            <h3 class="text-lg font-semibold text-green-700">${d.item}</h3>
+            <p><strong>Quantity:</strong> ${d.quantity}</p>
+            <p><strong>Pickup Location:</strong> ${d.location}</p>
+            <p><strong>Status:</strong> ${d.status}</p>
+            <div class="flex flex-wrap gap-3 mt-3">
+              <button onclick="requestDelivery('${d._id}', false)" 
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
+                🚚 Deliver to my shelter
+              </button>
+              <button onclick="requestDelivery('${d._id}', true)" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                🏃 I will collect myself
+              </button>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Error loading donations:", err);
+        document.getElementById("availableDonations").innerHTML =
+          "<p class='text-red-600'>Error loading data. Please refresh.</p>";
+      }
+    }
+
+    // ✅ Request delivery or self-pickup
+    async function requestDelivery(id, selfPickup = false) {
+      const email = localStorage.getItem("email");
+      if (!email) {
+        alert("⚠️ Please log in as a shelter first!");
+        return;
+      }
+
+      if (!selectedLocation && !selfPickup) {
+        alert("📍 Please select a location on the map first!");
+        return;
+      }
+
+      const payload = {
+        shelter: email,
+        location: selfPickup ? "Self Pickup" : selectedLocation,
+        self_pickup: selfPickup,
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/shelter_request/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message || "✅ Request submitted successfully!");
+          loadAvailableDonations();
+        } else {
+          alert("⚠️ " + (data.error || "Failed to submit request."));
+        }
+      } catch (err) {
+        console.error("Error requesting delivery:", err);
+        alert("❌ Server error while processing the request.");
+      }
+    }
+
+    // 🔹 Initialize
+    window.addEventListener("DOMContentLoaded", () => {
+      initMap();
+      loadAvailableDonations();
     });
-  }
-}
-
-// 🥗 Load pending donations (not yet requested)
-async function loadAvailableDonations() {
-  const res = await fetch(`${BASE_URL}/api/donations`);
-  const data = await res.json();
-  const container = document.getElementById("availableDonations");
-  container.innerHTML = "";
-
-  const pending = data.filter(d => d.status === "Pending");
-  if (!pending.length) {
-    container.innerHTML = `<p style='color:#6b7280;text-align:center;'>No available food right now.</p>`;
-    return;
-  }
-
-  pending.forEach(d => {
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <h3 style="color:#0f766e;font-weight:700;">${d.item} (${d.quantity})</h3>
-      <p>📍 ${d.location}</p>
-      <button class="accept-btn" onclick="requestDelivery('${d._id}', false)">🚚 Deliver to this location</button>
-      <button class="accept-btn" style="background:#2563eb;" onclick="requestDelivery('${d._id}', true)">🏃‍♀️ I will collect it myself</button>
-    `;
-    container.appendChild(div);
-  });
-}
-
-// ✅ Shelter sends request for delivery or self-pickup
-async function requestDelivery(id, selfPickup = false) {
-  const email = localStorage.getItem("email");
-  if (!email) {
-    alert("⚠️ Please log in first!");
-    return;
-  }
-
-  if (!selectedLocation && !selfPickup) {
-    alert("📍 Please select a location on the map first!");
-    return;
-  }
-
-  const payload = {
-    shelter: email,
-    location: selfPickup ? "Self Pickup" : selectedLocation,
-    self_pickup: selfPickup,
-  };
-
-  const res = await fetch(`${BASE_URL}/api/shelter_request/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  const data = await res.json();
-  alert(data.message);
-  loadAvailableDonations();
-}
-
-// Initialize
-setupMap();
-loadAvailableDonations();
-
-</script>
+  </script>
 </body>
 </html>
-
