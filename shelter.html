@@ -58,11 +58,46 @@ footer{text-align:center;color:#6b7280;padding:1rem;border-top:1px solid #e5e7eb
 
   <div class="card">
     <h2>🍱 Food Ready for Donation</h2>
-    <p id="foodList">Loading available donations…</p>
+    <div class="card" id="availableDonations"></div>
+    <script>
+    async function loadAvailableDonations() {
+      const res = await fetch("http://localhost:7860/api/donations");
+      const data = await res.json();
+      const container = document.getElementById("availableDonations");
+      container.innerHTML = "";
+    
+      data.filter(d => d.status === "Pending").forEach(donation => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h3>${donation.item} (${donation.quantity})</h3>
+          <p>📍 ${donation.location}</p>
+          <button onclick="acceptFood('${donation._id}')">Accept This Food</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+    
+    async function acceptFood(id) {
+      const location = prompt("Enter your shelter location:");
+      const email = localStorage.getItem("email");
+      const res = await fetch(`http://localhost:7860/api/shelter_request/${id}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({shelter: email, location})
+      });
+      const result = await res.json();
+      alert(result.message);
+      loadAvailableDonations();
+    }
+    
+    loadAvailableDonations();
+    </script>
   </div>
 </main>
 
 <footer>© 2025 CirclEats | Nourishing Communities 💚</footer>
 </body>
 </html>
+
 
