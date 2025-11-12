@@ -32,19 +32,19 @@
       padding: 0.75rem 1.5rem;
     }
 
-    .navbar .brand {
+    .brand {
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
-    .navbar .brand img {
+    .brand img {
       width: 40px;
       height: 40px;
       border-radius: 0.5rem;
     }
 
-    .navbar .brand span {
+    .brand span {
       font-weight: 700;
       color: #0f766e;
       font-size: 1.25rem;
@@ -70,7 +70,7 @@
       color: white;
     }
 
-    /* Dashboard layout */
+    /* Layout */
     .dashboard-grid {
       display: grid;
       grid-template-columns: 300px 1fr;
@@ -116,13 +116,17 @@
 
     .activity-type {
       font-weight: 700;
-      color: #065f46;
     }
 
     .activity-time {
       color: #6b7280;
       font-size: 0.85rem;
+      margin-top: 4px;
     }
+
+    .Donation { color: #065f46; }
+    .Volunteer { color: #1d4ed8; }
+    .Shelter { color: #92400e; }
   </style>
 </head>
 
@@ -144,7 +148,7 @@
     </nav>
   </header>
 
-  <!-- ✅ Dashboard Layout -->
+  <!-- ✅ Dashboard -->
   <main>
     <div class="dashboard-grid">
       <!-- Sidebar -->
@@ -158,23 +162,23 @@
 
         <div class="space-y-3">
           <div class="stats-tile">
-            <p class="tile-title">Donated</p>
-            <p id="donatedAmount" class="tile-value">₹0</p>
+            <p class="tile-title">Total Donations</p>
+            <p id="donationCount" class="tile-value">0</p>
           </div>
           <div class="stats-tile">
-            <p class="tile-title">Deliveries</p>
-            <p id="deliveriesCount" class="tile-value">0</p>
+            <p class="tile-title">Deliveries Volunteered</p>
+            <p id="volunteerCount" class="tile-value">0</p>
           </div>
           <div class="stats-tile">
-            <p class="tile-title">Shelters</p>
-            <p id="sheltersCount" class="tile-value">0</p>
+            <p class="tile-title">Shelters Served</p>
+            <p id="shelterCount" class="tile-value">0</p>
           </div>
         </div>
       </aside>
 
-      <!-- Main Panel -->
+      <!-- Activity -->
       <section class="bg-white shadow-md rounded-xl p-6">
-        <h2 class="text-2xl font-bold text-green-700 mb-4">Your Recent Activity</h2>
+        <h2 class="text-2xl font-bold text-green-700 mb-4 text-center">Your Recent Activity</h2>
         <div id="activityList">Loading activity...</div>
       </section>
     </div>
@@ -188,9 +192,14 @@
   <script>
     const API_BASE = "https://backend-circleats.onrender.com/api";
 
+    function formatDateFromObjectId(objectId) {
+      const timestamp = parseInt(objectId.substring(0, 8), 16) * 1000;
+      return new Date(timestamp).toLocaleString();
+    }
+
     async function loadDashboard() {
-      const userEmail = localStorage.getItem("email");
       const userId = localStorage.getItem("user_id");
+      const userEmail = localStorage.getItem("email");
       const userName = localStorage.getItem("name");
 
       document.getElementById("userName").innerText = userName || "User";
@@ -201,53 +210,53 @@
         const data = await res.json();
 
         if (!Array.isArray(data) || !data.length) {
-          document.getElementById("activityList").innerHTML =
-            `<p class="text-gray-500 text-center">No recent activity found.</p>`;
+          document.getElementById("activityList").innerHTML = `<p class="text-gray-500 text-center">No recent activity found.</p>`;
           return;
         }
 
         // Stats
-        const donatedCount = data.filter(d => d.status === "Donated").length;
-        const deliveryCount = data.filter(d => d.status === "In Transit").length;
-        const shelterCount = data.filter(d => d.donated_to).length;
+        const donationCount = data.length;
+        const volunteerCount = data.filter(d => d.status === "In Transit" || d.collected_by).length;
+        const shelterCount = data.filter(d => d.status === "Donated" && d.donated_to).length;
 
-        document.getElementById("donatedAmount").innerText = `₹${donatedCount * 100}`;
-        document.getElementById("deliveriesCount").innerText = deliveryCount;
-        document.getElementById("sheltersCount").innerText = shelterCount;
+        document.getElementById("donationCount").innerText = donationCount;
+        document.getElementById("volunteerCount").innerText = volunteerCount;
+        document.getElementById("shelterCount").innerText = shelterCount;
 
-        // Activities
+        // Activity Feed
         const container = document.getElementById("activityList");
         container.innerHTML = "";
 
-        data.reverse().forEach((item) => {
-          const div = document.createElement("div");
-          div.className = "activity-card";
+        data.reverse().forEach(item => {
+          const card = document.createElement("div");
+          card.className = "activity-card";
 
-          const type = item.status === "Pending"
-            ? "Donation"
-            : item.status === "In Transit"
-            ? "Volunteer"
-            : item.status === "Donated"
-            ? "Shelter"
-            : "Update";
+          let type = "Donation";
+          let colorClass = "Donation";
+          let message = `Donated ${item.quantity} servings of ${item.item || "food"}.`;
 
-          div.innerHTML = `
-            <p><span class="activity-type">${type}</span> — ${
-            item.status === "Donated"
-              ? `Donated ${item.quantity} servings of ${item.item} to ${item.donated_to || "a shelter"}`
-              : item.status === "In Transit"
-              ? `Accepted pickup of ${item.item} for delivery`
-              : `Donated ${item.quantity} servings of ${item.item}`
-          }</p>
-            <p class="activity-time">${new Date(item._id.substring(0, 8) * 1000).toLocaleString()}</p>
+          if (item.status === "In Transit") {
+            type = "Volunteer";
+            colorClass = "Volunteer";
+            message = `Accepted pickup of ${item.item || "food"} for delivery.`;
+          } else if (item.status === "Donated") {
+            type = "Shelter";
+            colorClass = "Shelter";
+            message = `Delivered ${item.quantity} servings of ${item.item} to ${item.donated_to || "a shelter"}.`;
+          }
+
+          const createdDate = formatDateFromObjectId(item._id);
+          card.innerHTML = `
+            <p><span class="activity-type ${colorClass}">${type}</span> — ${message}</p>
+            <p class="activity-time">📅 ${createdDate}</p>
           `;
 
-          container.appendChild(div);
+          container.appendChild(card);
         });
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-        document.getElementById("activityList").innerHTML =
-          `<p class="text-red-600 text-center">Error loading dashboard data.</p>`;
+
+      } catch (err) {
+        console.error("Error loading dashboard:", err);
+        document.getElementById("activityList").innerHTML = `<p class='text-red-600 text-center'>Error loading dashboard data.</p>`;
       }
     }
 
