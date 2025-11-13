@@ -68,36 +68,19 @@
 
   <body class="min-h-screen flex flex-col items-center py-8 px-4">
 
-    <!-- 🌟 Updated Navbar (Clean + Right-Side Navigation) -->
-    <header class="navbar">
+    <!-- ✅ Navbar -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
       <nav class="flex justify-between items-center px-6 py-3">
-
-        <!-- Brand -->
         <div class="flex items-center gap-2">
-          <img src="assets/logo.jpg" alt="CirclEats Logo" class="w-10 h-10 rounded" />
-          <span class="font-bold text-green-700 text-xl">CirclEats</span>
+          <img src="assets/logo.jpg" alt="CirclEats Logo" class="w-10 h-10 rounded-lg" />
+          <span class="text-2xl font-bold text-emerald-700">CirclEats</span>
         </div>
-
-        <!-- Right Side Menu -->
-        <div class="flex gap-3">
-          <button class="nav-btn active">Donor</button>
-
-          <button onclick="window.location.href='volunteer.html'" 
-                  class="nav-btn">
-            Volunteer
-          </button>
-
-          <button onclick="window.location.href='shelter.html'" 
-                  class="nav-btn">
-            Shelter
-          </button>
-
-          <button onclick="window.location.href='user-dashboard.html'" 
-                  class="px-4 py-2 bg-green-700 text-white font-medium rounded-lg shadow hover:bg-green-800">
-            Profile
-          </button>
+        <div>
+          <button onclick="window.location.href='dvs.html'" class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">Donor</button>
+          <button class="px-4 py-2 rounded-md bg-emerald-600 text-white font-semibold shadow-sm">Volunteer</button>
+          <button onclick="window.location.href='shelter.html'" class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">Shelter</button>
+          <button onclick="window.location.href='user-dashboard.html'" class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">Profile</button>
         </div>
-
       </nav>
     </header>
 
@@ -218,3 +201,4 @@
     <script src="js/bg.js"></script>
   </body>
 </html>
+
