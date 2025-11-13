@@ -36,40 +36,42 @@
 
 <body class="min-h-screen flex flex-col items-center py-8 px-4">
 
-  <!-- ✅ Navbar -->
-  <header class="bg-white shadow-sm sticky top-0 z-50">
-    <nav class="flex justify-between items-center px-6 py-3 w-full">
+  <!-- ✅ Full-Width Navbar -->
+  <header class="w-full bg-white shadow-md fixed top-0 left-0 z-50">
+    <nav class="w-full max-w-screen-2xl mx-auto flex justify-between items-center px-6 py-4">
   
       <!-- Left: Logo -->
-      <div class="flex items-center gap-2">
-        <img src="assets/logo.jpg" alt="CirclEats Logo" class="w-10 h-10 rounded-lg" />
+      <div class="flex items-center gap-3">
+        <img src="assets/logo.jpg" alt="CirclEats Logo" class="w-11 h-11 rounded-lg" />
         <span class="text-2xl font-bold text-emerald-700">CirclEats</span>
       </div>
   
-      <!-- Right: Menu -->
-      <div class="flex items-center gap-2">
-        <button class="px-4 py-2 rounded-md bg-emerald-600 text-white font-semibold shadow-sm">
+      <!-- Right: Menu Items -->
+      <div class="flex items-center gap-4">
+        <button class="px-5 py-2 rounded-md bg-emerald-600 text-white font-semibold shadow">
           Donor
         </button>
   
         <button onclick="window.location.href='volunteer.html'"
-          class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">
+          class="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100">
           Volunteer
         </button>
   
         <button onclick="window.location.href='shelter.html'"
-          class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">
+          class="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100">
           Shelter
         </button>
   
         <button onclick="window.location.href='user-dashboard.html'"
-          class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">
+          class="px-5 py-2 rounded-md text-gray-700 hover:bg-gray-100">
           Profile
         </button>
       </div>
-  
     </nav>
   </header>
+  
+  <!-- Add top spacing so content does not hide behind fixed navbar -->
+  <div class="h-20"></div>
 
   <!-- Main Content -->
   <main id="app" class="flex p-4 justify-center">
@@ -185,4 +187,5 @@
 
 </body>
 </html>
+
 
