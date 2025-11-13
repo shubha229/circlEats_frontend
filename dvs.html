@@ -1,204 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>CirclEats — Rescue Food, Nourish Community</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CirclEats — Donor Dashboard</title>
 
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- OpenLayers -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css" />
-    <script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
+  <!-- OpenLayers -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css" />
+  <script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
 
-    <style>
-      body {
-        background: linear-gradient(135deg, #f0fdf4, #eff6ff);
-        font-family: "Inter", sans-serif;
-      }
+  <style>
+    body {
+      background: linear-gradient(135deg, #f0fdf4, #eff6ff);
+      font-family: "Inter", sans-serif;
+    }
 
-      /* Cards */
-      .card {
-        transition: transform 0.2s, box-shadow 0.2s;
-        position: relative;
-      }
-      .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-      }
+    .card {
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
 
-      #map {
-        height: 250px;
-        border-radius: 0.75rem;
-      }
+    #map {
+      height: 250px;
+      border-radius: 0.75rem;
+    }
+  </style>
+</head>
 
-      /* Navbar */
-      header.navbar {
-        background: #ffffff;
-        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-      }
+<body class="min-h-screen flex flex-col items-center py-8 px-4">
 
-      .nav-btn {
-        padding: 0.45rem 0.9rem;
-        border-radius: 0.5rem;
-        background: none;
-        border: none;
-        font-weight: 500;
-        cursor: pointer;
-        color: #0f172a;
-        transition: 0.2s ease;
-      }
+  <!-- ✅ Navbar (Same as volunteer.html) -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="flex justify-between items-center px-6 py-3">
 
-      .nav-btn:hover {
-        background-color: #f3f4f6;
-      }
+      <div class="flex items-center gap-2">
+        <img src="assets/logo.jpg" alt="CirclEats Logo" class="w-10 h-10 rounded-lg" />
+        <span class="text-2xl font-bold text-emerald-700">CirclEats</span>
+      </div>
 
-      .nav-btn.active {
-        background-color: #0f766e;
-        color: white;
-      }
-    </style>
+      <div>
+        <button class="px-4 py-2 rounded-md bg-emerald-600 text-white font-semibold shadow-sm">
+          Donor
+        </button>
 
-    <meta name="theme-color" content="#0ea5a4" />
-  </head>
+        <button onclick="window.location.href='volunteer.html'"
+          class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">
+          Volunteer
+        </button>
 
-  <body class="min-h-screen flex flex-col items-center py-8 px-4">
+        <button onclick="window.location.href='shelter.html'"
+          class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">
+          Shelter
+        </button>
 
-    <!-- ✅ Navbar -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-      <nav class="flex justify-between items-center px-6 py-3">
-        <div class="flex items-center gap-2">
-          <img src="assets/logo.jpg" alt="CirclEats Logo" class="w-10 h-10 rounded-lg" />
-          <span class="text-2xl font-bold text-emerald-700">CirclEats</span>
-        </div>
-        <div>
-          <button onclick="window.location.href='dvs.html'" class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">Donor</button>
-          <button class="px-4 py-2 rounded-md bg-emerald-600 text-white font-semibold shadow-sm">Volunteer</button>
-          <button onclick="window.location.href='shelter.html'" class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">Shelter</button>
-          <button onclick="window.location.href='user-dashboard.html'" class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">Profile</button>
-        </div>
-      </nav>
-    </header>
+        <button onclick="window.location.href='user-dashboard.html'"
+          class="px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100">
+          Profile
+        </button>
+      </div>
 
-    <!-- Main Content -->
-    <main id="app" class="flex p-4 justify-center">
+    </nav>
+  </header>
 
-      <!-- Donor Dashboard -->
-      <section id="donor-view" class="w-full max-w-6xl flex flex-col gap-6">
-        <h1 class="text-4xl font-extrabold text-green-700 text-center">
-          Donor Dashboard
-        </h1>
+  <!-- Main Content -->
+  <main id="app" class="flex p-4 justify-center">
 
-        <!-- Create Donation -->
-        <div class="bg-white shadow-xl rounded-2xl p-6">
-          <h2 class="text-2xl font-semibold text-green-600 mb-4">
-            🧾 Create Donation
-          </h2>
+    <!-- Donor Dashboard -->
+    <section id="donor-view" class="w-full max-w-6xl flex flex-col gap-6">
+      <h1 class="text-4xl font-extrabold text-green-700 text-center">
+        Donor Dashboard
+      </h1>
 
-          <form id="donation-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block mb-2 font-medium">🍲 Food Type</label>
-              <select id="food-type"
-                class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400">
-                <option value="">Select Type</option>
-                <option>Cooked Meals</option>
-                <option>Bakery Items</option>
-                <option>Fruits</option>
-                <option>Vegetables</option>
-              </select>
-            </div>
+      <!-- Create Donation -->
+      <div class="bg-white shadow-xl rounded-2xl p-6">
+        <h2 class="text-2xl font-semibold text-green-600 mb-4">
+          🧾 Create Donation
+        </h2>
 
-            <div>
-              <label class="block mb-2 font-medium">🥗 Food Name (Optional)</label>
-              <input id="food-name" type="text"
-                placeholder="Example: Paneer Curry, Bread Loaf"
-                class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
-            </div>
-
-            <div>
-              <label class="block mb-2 font-medium">🍽 Quantity (Servings)</label>
-              <input id="quantity" type="number" min="1"
-                class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
-            </div>
-
-            <div>
-              <label class="block mb-2 font-medium">📅 Expiry Date/Time</label>
-              <input id="expiry" type="datetime-local"
-                class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
-            </div>
-
-            <div>
-              <label class="block mb-2 font-medium">📸 Attach Image (Optional)</label>
-              <input id="food-image" type="file" accept="image/*"
-                class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
-              <div id="image-preview" class="mt-2 text-center"></div>
-            </div>
-
-            <div class="md:col-span-2">
-              <label class="block mb-2 font-medium">📍 Location</label>
-              <input id="location-input" type="text"
-                placeholder="Type an address or click on map"
-                class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400 mb-2" />
-              <div id="map"></div>
-            </div>
-
-            <div class="md:col-span-2 text-center">
-              <button type="submit"
-                class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-xl shadow-md">
-                ➕ Create Listing
-              </button>
-            </div>
-          </form>
-
-          <div id="loading" class="hidden mt-4 text-center">
-            <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-green-600 mx-auto mb-2"></div>
-            <p class="text-green-700 font-medium">Creating your listing...</p>
+        <form id="donation-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block mb-2 font-medium">🍲 Food Type</label>
+            <select id="food-type"
+              class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400">
+              <option value="">Select Type</option>
+              <option>Cooked Meals</option>
+              <option>Bakery Items</option>
+              <option>Fruits</option>
+              <option>Vegetables</option>
+            </select>
           </div>
+
+          <div>
+            <label class="block mb-2 font-medium">🥗 Food Name (Optional)</label>
+            <input id="food-name" type="text"
+              placeholder="Example: Paneer Curry, Bread Loaf"
+              class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
+          </div>
+
+          <div>
+            <label class="block mb-2 font-medium">🍽 Quantity (Servings)</label>
+            <input id="quantity" type="number" min="1"
+              class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
+          </div>
+
+          <div>
+            <label class="block mb-2 font-medium">📅 Expiry Date/Time</label>
+            <input id="expiry" type="datetime-local"
+              class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
+          </div>
+
+          <div>
+            <label class="block mb-2 font-medium">📸 Attach Image (Optional)</label>
+            <input id="food-image" type="file" accept="image/*"
+              class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400" />
+            <div id="image-preview" class="mt-2 text-center"></div>
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block mb-2 font-medium">📍 Location</label>
+            <input id="location-input" type="text"
+              placeholder="Type an address or click on map"
+              class="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-400 mb-2" />
+            <div id="map"></div>
+          </div>
+
+          <div class="md:col-span-2 text-center">
+            <button type="submit"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-xl shadow-md">
+              ➕ Create Listing
+            </button>
+          </div>
+        </form>
+
+        <div id="loading" class="hidden mt-4 text-center">
+          <div class="animate-spin rounded-full h-10 w-10 border-t-4 border-green-600 mx-auto mb-2"></div>
+          <p class="text-green-700 font-medium">Creating your listing...</p>
         </div>
+      </div>
 
-        <!-- Donation Listings -->
-        <section class="my-6">
-          <h2 class="text-2xl font-bold text-green-700 mb-3">📦 My Listings</h2>
-          <div id="listing-cards" class="space-y-3"></div>
-        </section>
+      <!-- Donation Listings -->
+      <section class="my-6">
+        <h2 class="text-2xl font-bold text-green-700 mb-3">📦 My Listings</h2>
+        <div id="listing-cards" class="space-y-3"></div>
       </section>
+    </section>
 
-      <!-- Hidden volunteer & shelter (managed via separate pages) -->
-      <section id="volunteer-view" class="hidden"></section>
-      <section id="shelter-view" class="hidden"></section>
+  </main>
 
-    </main>
+  <!-- Footer -->
+  <footer class="w-full bg-white shadow-inner py-4 text-center text-xs text-gray-500 mt-10">
+    © <span id="year"></span> CirclEats. All rights reserved.
+  </footer>
 
-    <!-- Footer -->
-    <footer class="w-full bg-white shadow-inner py-4 text-center text-xs text-gray-500 mt-10">
-      © <span id="year"></span> CirclEats. All rights reserved.
-    </footer>
+  <!-- Scripts -->
+  <script>
+    if (!localStorage.getItem("user_id")) {
+      alert("Please log in first!");
+      window.location.href = "login.html";
+    }
 
-    <!-- Scripts -->
-    <script>
-      if (!localStorage.getItem("user_id")) {
-        alert("Please log in first!");
-        window.location.href = "login.html";
-      }
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-      document.getElementById("year").textContent = new Date().getFullYear();
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("donor-view").classList.remove("hidden");
+    });
+  </script>
 
-      window.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("donor-view").classList.remove("hidden");
-      });
-    </script>
+  <!-- External JS -->
+  <script src="js/utils.js"></script>
+  <script src="js/lang.js"></script>
+  <script src="js/donor.js"></script>
+  <script src="js/volunteer.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/bg.js"></script>
 
-    <!-- External JS -->
-    <script src="js/utils.js"></script>
-    <script src="js/lang.js"></script>
-    <script src="js/donor.js"></script>
-    <script src="js/volunteer.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/bg.js"></script>
-  </body>
+</body>
 </html>
-
