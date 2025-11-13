@@ -107,25 +107,26 @@
       const res = await fetch(`${API_BASE}/my_donations/${userId}`);
       const data = await res.json();
 
-      const donationCount = data.length;
-      const volunteerCount = data.filter(d => d.status === "In Transit").length;
-      const shelterCount = data.filter(d => d.status === "Donated").length;
+      // LEFT SIDE STATS (ONLY 2)
+      document.getElementById("donationCount").innerText = data.length;
 
-      document.getElementById("donationCount").innerText = donationCount;
+      const volunteerCount = data.filter(
+        d => d.collected_by === email || d.status === "In Transit"
+      ).length;
+
       document.getElementById("volunteerCount").innerText = volunteerCount;
-      document.getElementById("shelterCount").innerText = shelterCount;
 
+      // RIGHT SIDE ACTIVITY FEED
       const container = document.getElementById("activityList");
       container.innerHTML = "";
 
       data.reverse().forEach(item => {
         let type = "Donation";
-        let label = "Donation";
         let message = `Donated ${item.quantity} servings of ${item.item}.`;
 
-        if (item.status === "In Transit") {
+        if (item.collected_by === email || item.status === "In Transit") {
           type = "Volunteer";
-          message = `You accepted delivery of ${item.item}.`;
+          message = `You volunteered to deliver ${item.item}.`;
         }
 
         if (item.status === "Donated") {
@@ -140,6 +141,7 @@
           <p class="${type}">${type} — ${message}</p>
           <p class="activity-time">📅 ${formatDate(item._id)}</p>
         `;
+
         container.appendChild(div);
       });
 
@@ -154,4 +156,3 @@
 
 </body>
 </html>
-
