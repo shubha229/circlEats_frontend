@@ -5,262 +5,157 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CirclEats | User Dashboard</title>
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" href="assets/logo.jpg" />
 
   <style>
-    body {
-      background-color: #f9fafb;
-      color: #1f2937;
-      font-family: "Poppins", sans-serif;
-    }
-
-    header.navbar {
-      background-color: white;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      width: 100%;
-    }
-
-    .navbar nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 1.5rem;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .brand img {
-      width: 40px;
-      height: 40px;
-      border-radius: 0.5rem;
-    }
-
-    .brand span {
-      font-weight: 700;
-      color: #0f766e;
-      font-size: 1.25rem;
-    }
-
-    .nav-btn {
-      padding: 0.45rem 0.9rem;
-      border-radius: 0.5rem;
-      background: none;
-      border: none;
-      font-weight: 500;
-      cursor: pointer;
-      color: #0f172a;
-      transition: all 0.2s ease;
-    }
-
-    .nav-btn:hover {
-      background-color: #f3f4f6;
-    }
-
-    .nav-btn.active {
-      background-color: #0f766e;
-      color: white;
-    }
-
-    /* Layout */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 300px 1fr;
-      gap: 20px;
-      margin-top: 2rem;
-      padding: 0 2rem;
-    }
-
-    .sidebar {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .stats-tile {
-      background: #f9fafb;
-      border-radius: 10px;
-      padding: 1rem;
-      text-align: center;
-      border-left: 4px solid #0f766e;
-    }
-
-    .tile-title {
-      color: #4b5563;
-      font-weight: 600;
-    }
-
-    .tile-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #0f766e;
-    }
-
-    .activity-card {
-      background: white;
-      border-left: 4px solid #16a34a;
-      border-radius: 10px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-
-    .activity-type {
-      font-weight: 700;
-    }
-
-    .activity-time {
-      color: #6b7280;
-      font-size: 0.85rem;
-      margin-top: 4px;
-    }
-
-    .Donation { color: #065f46; }
-    .Volunteer { color: #1d4ed8; }
-    .Shelter { color: #92400e; }
+    body { background-color: #f9fafb; font-family: "Poppins", sans-serif; }
+    header.navbar { background:white; box-shadow:0 2px 4px rgba(0,0,0,0.05); position:sticky; top:0; z-index:50; }
+    .dashboard-grid { display:grid; grid-template-columns:300px 1fr; gap:20px; margin-top:2rem; padding:0 2rem; }
+    .sidebar { background:white; padding:20px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .stats-tile { background:#f9fafb; border-radius:10px; padding:1rem; text-align:center; border-left:4px solid #0f766e; }
+    .activity-card { background:white; border-left:4px solid #16a34a; padding:1rem; margin-bottom:1rem;
+                     border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+    .Donation { color:#065f46; font-weight:700; }
+    .Volunteer { color:#1d4ed8; font-weight:700; }
+    .Shelter { color:#92400e; font-weight:700; }
+    .activity-time { font-size:0.85rem; color:#6b7280; }
   </style>
 </head>
 
 <body>
-  <!-- ✅ Navbar -->
-  <header class="navbar">
-    <nav>
-      <div class="brand">
-        <img src="assets/logo.jpg" alt="CirclEats Logo" />
-        <span>CirclEats</span>
-      </div>
 
-      <div>
-        <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
-        <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
-        <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
-        <button class="nav-btn active">My Profile</button>
-      </div>
-    </nav>
-  </header>
-
-  <!-- ✅ Dashboard -->
-  <main>
-    <div class="dashboard-grid">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="text-center mb-6">
-          <h3 class="font-semibold text-lg">Welcome back 👋</h3>
-          <p id="userName" class="text-green-700 font-bold">User</p>
-          <p id="userEmail" class="text-sm text-gray-500"></p>
-          <p class="mt-1 text-xs bg-gray-100 rounded-lg inline-block px-3 py-1 text-gray-600">Role: user</p>
-        </div>
-
-        <div class="space-y-3">
-          <div class="stats-tile">
-            <p class="tile-title">Total Donations</p>
-            <p id="donationCount" class="tile-value">0</p>
-          </div>
-          <div class="stats-tile">
-            <p class="tile-title">Deliveries Volunteered</p>
-            <p id="volunteerCount" class="tile-value">0</p>
-          </div>
-          <div class="stats-tile">
-            <p class="tile-title">Shelters Served</p>
-            <p id="shelterCount" class="tile-value">0</p>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Activity -->
-      <section class="bg-white shadow-md rounded-xl p-6">
-        <h2 class="text-2xl font-bold text-green-700 mb-4 text-center">Your Recent Activity</h2>
-        <div id="activityList">Loading activity...</div>
-      </section>
+<header class="navbar">
+  <nav class="flex justify-between items-center px-6 py-4">
+    <div class="brand flex items-center gap-2">
+      <img src="assets/logo.jpg" class="w-10 h-10 rounded" />
+      <span class="font-bold text-green-700 text-xl">CirclEats</span>
     </div>
-  </main>
 
-  <footer class="text-center text-gray-500 py-4 text-sm">
-    © 2025 CirclEats | Nourishing Communities 💚
-  </footer>
+    <div class="flex gap-4">
+      <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
+      <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
+      <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
+      <button class="nav-btn active bg-green-700 text-white px-4 py-2 rounded-lg">My Profile</button>
+    </div>
+  </nav>
+</header>
 
-  <!-- ✅ JS -->
-  <script>
-    const API_BASE = "https://backend-circleats.onrender.com/api";
+<main class="mt-10">
+  <div class="dashboard-grid">
 
-    function formatDateFromObjectId(objectId) {
-      const timestamp = parseInt(objectId.substring(0, 8), 16) * 1000;
-      return new Date(timestamp).toLocaleString();
+    <!-- LEFT SIDE -->
+    <aside class="sidebar">
+      <div class="text-center mb-5">
+        <h3 class="font-bold text-lg">Welcome 👋</h3>
+        <p id="userName" class="text-green-700 font-bold"></p>
+        <p id="userEmail" class="text-sm text-gray-500"></p>
+      </div>
+
+      <div class="space-y-4">
+        <div class="stats-tile">
+          <p>Total Donations</p>
+          <p id="donationCount" class="text-2xl font-bold text-green-700">0</p>
+        </div>
+
+        <div class="stats-tile">
+          <p>Deliveries Volunteered</p>
+          <p id="volunteerCount" class="text-2xl font-bold text-green-700">0</p>
+        </div>
+
+        <div class="stats-tile">
+          <p>Shelters Served</p>
+          <p id="shelterCount" class="text-2xl font-bold text-green-700">0</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT SIDE – ACTIVITY -->
+    <section class="bg-white shadow-md rounded-xl p-6">
+      <h2 class="text-2xl font-bold text-center text-green-700 mb-4">
+        Your Recent Activity
+      </h2>
+
+      <div id="activityList">Loading activity...</div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="text-center py-4 text-gray-500 text-sm mt-10">
+  © 2025 CirclEats | Nourishing Communities 💚
+</footer>
+
+<script>
+  const API_BASE = "https://backend-circleats.onrender.com/api";
+
+  function formatDate(id) {
+    const ts = parseInt(id.substring(0, 8), 16) * 1000;
+    return new Date(ts).toLocaleString();
+  }
+
+  async function loadDashboard() {
+    const userId = localStorage.getItem("user_id");
+    const email = localStorage.getItem("email");
+    const name = localStorage.getItem("name");
+
+    document.getElementById("userName").innerText = name || "User";
+    document.getElementById("userEmail").innerText = email || "";
+
+    if (!userId) {
+      document.getElementById("activityList").innerHTML =
+        `<p class='text-red-600 text-center'>User not logged in.</p>`;
+      return;
     }
 
-    async function loadDashboard() {
-      const userId = localStorage.getItem("user_id");
-      const userEmail = localStorage.getItem("email");
-      const userName = localStorage.getItem("name");
+    try {
+      const res = await fetch(`${API_BASE}/my_donations/${userId}`);
+      const data = await res.json();
 
-      document.getElementById("userName").innerText = userName || "User";
-      document.getElementById("userEmail").innerText = userEmail || "";
+      const donationCount = data.length;
+      const volunteerCount = data.filter(d => d.status === "In Transit").length;
+      const shelterCount = data.filter(d => d.status === "Donated").length;
 
-      try {
-        const res = await fetch(`${API_BASE}/my_donations/${userId}`);
-        const data = await res.json();
+      document.getElementById("donationCount").innerText = donationCount;
+      document.getElementById("volunteerCount").innerText = volunteerCount;
+      document.getElementById("shelterCount").innerText = shelterCount;
 
-        if (!Array.isArray(data) || !data.length) {
-          document.getElementById("activityList").innerHTML = `<p class="text-gray-500 text-center">No recent activity found.</p>`;
-          return;
+      const container = document.getElementById("activityList");
+      container.innerHTML = "";
+
+      data.reverse().forEach(item => {
+        let type = "Donation";
+        let label = "Donation";
+        let message = `Donated ${item.quantity} servings of ${item.item}.`;
+
+        if (item.status === "In Transit") {
+          type = "Volunteer";
+          message = `You accepted delivery of ${item.item}.`;
         }
 
-        // Stats
-        const donationCount = data.length;
-        const volunteerCount = data.filter(d => d.status === "In Transit" || d.collected_by).length;
-        const shelterCount = data.filter(d => d.status === "Donated" && d.donated_to).length;
+        if (item.status === "Donated") {
+          type = "Shelter";
+          message = `Delivered ${item.item} to ${item.donated_to}.`;
+        }
 
-        document.getElementById("donationCount").innerText = donationCount;
-        document.getElementById("volunteerCount").innerText = volunteerCount;
-        document.getElementById("shelterCount").innerText = shelterCount;
+        const div = document.createElement("div");
+        div.className = "activity-card";
 
-        // Activity Feed
-        const container = document.getElementById("activityList");
-        container.innerHTML = "";
+        div.innerHTML = `
+          <p class="${type}">${type} — ${message}</p>
+          <p class="activity-time">📅 ${formatDate(item._id)}</p>
+        `;
+        container.appendChild(div);
+      });
 
-        data.reverse().forEach(item => {
-          const card = document.createElement("div");
-          card.className = "activity-card";
-
-          let type = "Donation";
-          let colorClass = "Donation";
-          let message = `Donated ${item.quantity} servings of ${item.item || "food"}.`;
-
-          if (item.status === "In Transit") {
-            type = "Volunteer";
-            colorClass = "Volunteer";
-            message = `Accepted pickup of ${item.item || "food"} for delivery.`;
-          } else if (item.status === "Donated") {
-            type = "Shelter";
-            colorClass = "Shelter";
-            message = `Delivered ${item.quantity} servings of ${item.item} to ${item.donated_to || "a shelter"}.`;
-          }
-
-          const createdDate = formatDateFromObjectId(item._id);
-          card.innerHTML = `
-            <p><span class="activity-type ${colorClass}">${type}</span> — ${message}</p>
-            <p class="activity-time">📅 ${createdDate}</p>
-          `;
-
-          container.appendChild(card);
-        });
-
-      } catch (err) {
-        console.error("Error loading dashboard:", err);
-        document.getElementById("activityList").innerHTML = `<p class='text-red-600 text-center'>Error loading dashboard data.</p>`;
-      }
+    } catch (err) {
+      document.getElementById("activityList").innerHTML =
+        `<p class='text-red-600 text-center'>Error loading dashboard data.</p>`;
     }
+  }
 
-    document.addEventListener("DOMContentLoaded", loadDashboard);
-  </script>
+  document.addEventListener("DOMContentLoaded", loadDashboard);
+</script>
+
 </body>
 </html>
