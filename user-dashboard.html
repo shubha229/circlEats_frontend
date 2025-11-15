@@ -31,7 +31,7 @@
         <img src="assets/logo.jpg" class="w-10 h-10 rounded" />
         <span class="font-bold text-green-700 text-xl">CirclEats</span>
       </div>
-  
+
       <div class="flex gap-4">
         <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
         <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
@@ -40,10 +40,10 @@
       </div>
     </nav>
   </header>
-  
+
   <main class="mt-10">
     <div class="dashboard-grid">
-  
+
       <!-- LEFT SIDE -->
       <aside class="sidebar">
         <div class="text-center mb-5">
@@ -51,133 +51,138 @@
           <p id="userName" class="text-green-700 font-bold"></p>
           <p id="userEmail" class="text-sm text-gray-500"></p>
         </div>
-  
+
         <div class="space-y-4">
           <div class="stats-tile">
-            <p>Total Donations</p>
+            <p>Total Donations Created</p>
             <p id="donationCount" class="text-2xl font-bold text-green-700">0</p>
           </div>
-  
+
           <div class="stats-tile">
             <p>Deliveries Volunteered</p>
             <p id="volunteerCount" class="text-2xl font-bold text-green-700">0</p>
           </div>
 
-          <!-- NEW SELF PICKUP COUNTER -->
           <div class="stats-tile">
             <p>Self Pickups</p>
             <p id="selfPickupCount" class="text-2xl font-bold text-green-700">0</p>
           </div>
-
         </div>
       </aside>
-  
+
       <!-- RIGHT SIDE – ACTIVITY -->
       <section class="bg-white shadow-md rounded-xl p-6">
         <h2 class="text-2xl font-bold text-center text-green-700 mb-4">
           Your Recent Activity
         </h2>
-  
+
         <div id="activityList">Loading activity...</div>
       </section>
-  
+
     </div>
   </main>
-  
+
   <footer class="text-center py-4 text-gray-500 text-sm mt-10">
     © 2025 CirclEats | Nourishing Communities 💚
   </footer>
-  
+
   <script>
     const API_BASE = "https://backend-circleats.onrender.com/api";
-  
+
     function formatDate(id) {
       const ts = parseInt(id.substring(0, 8), 16) * 1000;
       return new Date(ts).toLocaleString();
     }
-  
+
     async function loadDashboard() {
       const userId = localStorage.getItem("user_id");
       const email = localStorage.getItem("email");
       const name = localStorage.getItem("name");
-  
+
       document.getElementById("userName").innerText = name || "User";
       document.getElementById("userEmail").innerText = email || "";
-  
+
       if (!userId) {
         document.getElementById("activityList").innerHTML =
           `<p class='text-red-600 text-center'>User not logged in.</p>`;
         return;
       }
-  
+
       try {
         const res = await fetch(`${API_BASE}/my_donations/${userId}`);
         const data = await res.json();
-  
-        /* ---------------- LEFT SIDE COUNTS ---------------- */
+
+        // LEFT SIDE STATS
         document.getElementById("donationCount").innerText = data.length;
-  
+
         const volunteerCount = data.filter(
           d => d.collected_by === email || d.status === "In Transit"
         ).length;
-        document.getElementById("volunteerCount").innerText = volunteerCount;
 
-        // NEW — Count SELF PICKUPS
         const selfPickupCount = data.filter(
-          d => d.shelter_request &&
-               d.shelter_request.self_pickup === true &&
-               d.shelter_request.email === email
+          d => d.shelter_request?.self_pickup === true &&
+               d.shelter_request?.email === email
         ).length;
 
+        document.getElementById("volunteerCount").innerText = volunteerCount;
         document.getElementById("selfPickupCount").innerText = selfPickupCount;
-  
-        /* ---------------- RIGHT SIDE ACTIVITY ---------------- */
+
+        // RIGHT SIDE ACTIVITY
         const container = document.getElementById("activityList");
         container.innerHTML = "";
-  
-        data.reverse().forEach(item => {
-          let type = "Donation";
-          let message = `Donated ${item.quantity} servings of ${item.item}.`;
-  
-          // VOLUNTEER
-          if (item.collected_by === email || item.status === "In Transit") {
-            type = "Volunteer";
-            message = `You volunteered to deliver ${item.item}.`;
-          }
 
-          // SELF PICKUP (NEW)
-          if (item.shelter_request &&
-              item.shelter_request.self_pickup === true &&
-              item.shelter_request.email === email) {
+        data.reverse().forEach(item => {
+          let type = "";
+          let message = "";
+
+          // 🟢 SELF PICKUP
+          if (item.shelter_request?.self_pickup === true &&
+              item.shelter_request?.email === email) {
 
             type = "Shelter";
             message = `You chose SELF PICKUP for ${item.item}.`;
           }
 
-          // NORMAL DONATION TO SHELTER
-          else if (item.status === "Donated") {
-            type = "Shelter";
-            message = `Delivered ${item.item} to ${item.donated_to}.`;
+          // 🟢 VOLUNTEER DELIVERY
+          else if (item.collected_by === email || item.status === "In Transit") {
+            type = "Volunteer";
+            message = `You volunteered to deliver ${item.item}.`;
           }
-  
+
+          // 🟢 YOU DONATED → SHELTER RECEIVED IT
+          else if (item.status === "Donated" && item.user_id === userId) {
+            type = "Donation";
+            message = `You donated ${item.item} to ${item.donated_to}.`;
+          }
+
+          // 🟢 SHOWN WHEN DONATION CREATED (Pending)
+          else if (item.status === "Pending") {
+            type = "Donation";
+            message = `You created a new donation: ${item.item}.`;
+          }
+
+          // fallback
+          else {
+            type = "Donation";
+            message = `Donation update: ${item.item}.`;
+          }
+
           const div = document.createElement("div");
           div.className = "activity-card";
-  
           div.innerHTML = `
             <p class="${type}">${type} — ${message}</p>
             <p class="activity-time">📅 ${formatDate(item._id)}</p>
           `;
-  
           container.appendChild(div);
         });
-  
+
       } catch (err) {
         console.error(err);
         document.getElementById("activityList").innerHTML =
           `<p class='text-red-600 text-center'>Error loading dashboard data.</p>`;
       }
     }
-  
+
     document.addEventListener("DOMContentLoaded", loadDashboard);
   </script>
 
