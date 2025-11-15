@@ -14,8 +14,7 @@
     .dashboard-grid { display:grid; grid-template-columns:300px 1fr; gap:20px; margin-top:2rem; padding:0 2rem; }
     .sidebar { background:white; padding:20px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
     .stats-tile { background:#f9fafb; border-radius:10px; padding:1rem; text-align:center; border-left:4px solid #0f766e; }
-    .activity-card { background:white; border-left:4px solid #16a34a; padding:1rem; margin-bottom:1rem;
-                     border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+    .activity-card { background:white; border-left:4px solid #16a34a; padding:1rem; margin-bottom:1rem; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
     .Donation { color:#065f46; font-weight:700; }
     .Volunteer { color:#1d4ed8; font-weight:700; }
     .Shelter { color:#92400e; font-weight:700; }
@@ -24,29 +23,22 @@
 </head>
 
 <body>
-  <!-- Header -->
-  <header class="bg-white shadow-sm sticky top-0 z-40 w-full p-0 m-0">
-    <header class="navbar p-0 m-0">
-      <nav>
-        <div class="brand">
-          <img src="assets/logo.jpg" alt="CirclEats Logo" />
-          <span>CirclEats</span>
-        </div>
 
-        <div>
-          <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
-          <button onclick="window.location.href='volunteer.html'">Volunteer</button>
-          <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
-          <button class="nav-btn" class="nav-btn active">Profile</button>
-        </div>
+  <!-- ✅ CLEAN HEADER (no nested header) -->
+  <header class="navbar">
+    <nav class="flex justify-between items-center px-6 py-4">
+      <div class="brand flex items-center gap-2">
+        <img src="assets/logo.jpg" class="w-10 h-10 rounded" />
+        <span class="font-bold text-green-700 text-xl">CirclEats</span>
+      </div>
 
-        <select id="lang-select" class="lang-select">
-          <option value="en">English</option>
-          <option value="hi">हिन्दी</option>
-          <option value="kn">ಕನ್ನಡ</option>
-        </select>
-      </nav>
-    </header>
+      <div class="flex gap-4">
+        <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
+        <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
+        <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
+        <button class="nav-btn active bg-green-700 text-white px-4 py-2 rounded-lg">My Profile</button>
+      </div>
+    </nav>
   </header>
 
   <main class="mt-10">
@@ -143,33 +135,31 @@
           let type = "";
           let message = "";
 
-          // 🟢 SELF PICKUP
+          // Self Pickup
           if (item.shelter_request?.self_pickup === true &&
               item.shelter_request?.email === email) {
-
             type = "Shelter";
             message = `You chose SELF PICKUP for ${item.item}.`;
           }
 
-          // 🟢 VOLUNTEER DELIVERY
+          // Volunteer
           else if (item.collected_by === email || item.status === "In Transit") {
             type = "Volunteer";
             message = `You volunteered to deliver ${item.item}.`;
           }
 
-          // 🟢 YOU DONATED → SHELTER RECEIVED IT
+          // Donated to shelter
           else if (item.status === "Donated" && item.user_id === userId) {
             type = "Donation";
             message = `You donated ${item.item} to ${item.donated_to}.`;
           }
 
-          // 🟢 SHOWN WHEN DONATION CREATED (Pending)
+          // Donation created
           else if (item.status === "Pending") {
             type = "Donation";
             message = `You created a new donation: ${item.item}.`;
           }
 
-          // fallback
           else {
             type = "Donation";
             message = `Donation update: ${item.item}.`;
@@ -196,6 +186,3 @@
 
 </body>
 </html>
-
-
-
