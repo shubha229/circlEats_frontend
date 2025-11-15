@@ -167,6 +167,7 @@
           const shelter = d.shelter_request || {};
 
           const div = document.createElement("div");
+          div.id = `req-${d._id}`; // ✔ unique ID for instant removal
           div.className =
             "p-4 border-l-4 border-blue-500 rounded-lg shadow-sm bg-white";
 
@@ -194,7 +195,6 @@
     // Accept delivery
     async function acceptDelivery(id) {
       const volunteer = localStorage.getItem("email");
-
       if (!volunteer) return alert("Login required!");
 
       try {
@@ -208,8 +208,13 @@
 
         if (res.ok) {
           alert(data.message || "Delivery accepted!");
-          await loadDeliveryRequests();
-          await loadMyDeliveries(); // FORCE update
+
+          // ✔ Remove instantly from the available list
+          const element = document.getElementById(`req-${id}`);
+          if (element) element.remove();
+
+          // ✔ Reload only accepted deliveries
+          loadMyDeliveries();
         } else {
           alert(data.error || "Unable to accept delivery.");
         }
@@ -218,10 +223,9 @@
       }
     }
 
-    // Load all deliveries accepted by THIS volunteer
+    // Load accepted deliveries
     async function loadMyDeliveries() {
       const volunteer = localStorage.getItem("email");
-
       const container = document.getElementById("myDeliveries");
       container.innerHTML = "";
 
