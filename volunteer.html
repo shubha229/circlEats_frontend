@@ -64,6 +64,7 @@
       color: #0f766e;
       font-size: 1.3rem;
     }
+
     .nav-btn {
       padding: 0.45rem 0.9rem;
       border-radius: 0.5rem;
@@ -81,15 +82,6 @@
       background-color: #0f766e;
       color: white;
     }
-
-    .lang-select {
-      border: 1px solid #d1d5db;
-      border-radius: 0.375rem;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.85rem;
-    }
-
-    .margin { margin-top: 20px; }
   </style>
 </head>
 
@@ -103,14 +95,14 @@
           <img src="assets/logo.jpg" alt="CirclEats Logo" />
           <span>CirclEats</span>
         </div>
-  
+
         <div>
           <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
           <button onclick="window.location.href='volunteer.html'" class="nav-btn active">Volunteer</button>
           <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
           <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
         </div>
-  
+
         <select id="lang-select" class="lang-select">
           <option value="en">English</option>
           <option value="hi">हिन्दी</option>
@@ -119,7 +111,6 @@
       </nav>
     </header>
   </header>
-
 
   <!-- Main -->
   <main class="max-w-5xl mx-auto p-4">
@@ -134,11 +125,11 @@
     </div>
 
     <!-- My Accepted Deliveries -->
-    <section class="margin bg-white shadow-lg rounded-2xl p-6">
+    <section class="mt-6 bg-white shadow-lg rounded-2xl p-6">
       <h2 class="text-2xl font-semibold text-emerald-700 mb-3 flex items-center gap-2">
         📦 My Accepted Deliveries
       </h2>
-      <div id="myDeliveries"  class="space-y-5 text-gray-700"></div>
+      <div id="myDeliveries" class="space-y-5 text-gray-700"></div>
     </section>
   </main>
 
@@ -150,7 +141,9 @@
   <script>
     const API_BASE = "https://backend-circleats.onrender.com/api";
 
-    // Load OPEN requests
+    /* ==================================================
+        LOAD AVAILABLE DELIVERY REQUESTS
+    ====================================================*/
     async function loadDeliveryRequests() {
       try {
         const res = await fetch(`${API_BASE}/shelter_requests`);
@@ -168,20 +161,20 @@
           const shelter = d.shelter_request || {};
 
           const div = document.createElement("div");
-          div.id = `req-${d._id}`; // ✔ unique ID for instant removal
+          div.id = `req-${d._id}`;
           div.className =
             "p-4 border-l-4 border-blue-500 rounded-lg shadow-sm bg-white";
 
           div.innerHTML = `
-            <span class="tag">Accepted</span>
             <h3 class="text-xl font-bold text-blue-700">${d.item}</h3>
             <p><strong>Quantity:</strong> ${d.quantity}</p>
             <p><strong>Pickup Location:</strong> ${d.location}</p>
             <p><strong>Shelter Email:</strong> ${shelter.email || "N/A"}</p>
             <p><strong>Shelter Location:</strong> ${shelter.location || "Not specified"}</p>
-          
-            <button class="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
-              Accepted Delivery
+
+            <button class="mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+              onclick="acceptDelivery('${d._id}')">
+              Accept This Delivery
             </button>
           `;
 
@@ -194,7 +187,9 @@
       }
     }
 
-    // Accept delivery
+    /* ==================================================
+        ACCEPT DELIVERY
+    ====================================================*/
     async function acceptDelivery(id) {
       const volunteer = localStorage.getItem("email");
       if (!volunteer) return alert("Login required!");
@@ -210,15 +205,12 @@
 
         if (res.ok) {
           alert("Delivery accepted!");
-        
-          // instantly remove from available list
+
           const el = document.getElementById(`req-${id}`);
           if (el) el.remove();
-        
-          // load only accepted deliveries
+
           loadMyDeliveries();
-        }
-else {
+        } else {
           alert(data.error || "Unable to accept delivery.");
         }
       } catch (err) {
@@ -226,7 +218,9 @@ else {
       }
     }
 
-    // Load accepted deliveries
+    /* ==================================================
+        LOAD MY ACCEPTED DELIVERIES
+    ====================================================*/
     async function loadMyDeliveries() {
       const volunteer = localStorage.getItem("email");
       const container = document.getElementById("myDeliveries");
@@ -249,23 +243,21 @@ else {
 
         data.forEach((d) => {
           const shelter = d.shelter_request || {};
-        
+
           const div = document.createElement("div");
-          div.id = `req-${d._id}`;   // ✅ ADD THIS LINE
-          div.className =
-            "p-4 border-l-4 border-blue-500 rounded-lg shadow-sm bg-white";
-        
+          div.className = "card";
+
           div.innerHTML = `
+            <span class="tag">Accepted</span>
             <h3 class="text-xl font-bold text-blue-700">${d.item}</h3>
             <p><strong>Quantity:</strong> ${d.quantity}</p>
             <p><strong>Pickup Location:</strong> ${d.location}</p>
             <p><strong>Shelter Email:</strong> ${shelter.email || "N/A"}</p>
-            <p><strong>Shelter Location:</strong> ${shelter.location || "Not specified"}</p>
+            <p><strong>Shelter Location:</strong> ${shelter.location || "N/A"}</p>
           `;
 
           container.appendChild(div);
         });
-
       } catch (err) {
         console.error(err);
         container.innerHTML =
