@@ -4,15 +4,126 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CircleEats — Login</title>
-  <link rel="stylesheet" href="css/stylesofindex.css">
-  <link rel="stylesheet" href="css/auth.css">
+
+  <style>
+    :root{
+      --bg: #f6fbff;
+      --card: #ffffff;
+      --accent: #0b8f6c;
+      --accent-dark: #0a6f53;
+      --accent-light: #7fe6b7;
+      --muted: #6b7280;
+      --shadow: 0 8px 22px rgba(12,20,30,0.08);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    * { box-sizing: border-box; }
+
+    body.auth-page {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url("assets/loginBg.jpeg") no-repeat center center fixed;
+      background-size: cover;
+      padding: 20px;
+    }
+
+    .auth-wrapper{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      width:100%;
+    }
+
+    .auth-card{
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(6px);
+      padding:2rem;
+      border-radius:1rem;
+      width:320px;
+      box-shadow:0 4px 30px rgba(0,0,0,0.12);
+      animation:fadeIn 0.7s ease;
+    }
+
+    @keyframes fadeIn {
+      from{opacity:0; transform:translateY(10px);}
+      to{opacity:1; transform:translateY(0);}
+    }
+
+    .auth-brand{
+      text-align:center;
+      margin-bottom:18px;
+    }
+
+    .auth-brand img{
+      width:60px;
+      height:auto;
+      margin-bottom:10px;
+    }
+
+    .auth-card h2{
+      margin:0;
+      font-size:1.4rem;
+      color:var(--accent-dark);
+      font-weight:700;
+    }
+
+    label{
+      display:block;
+      margin-top:12px;
+      font-size:0.9rem;
+      color:#333;
+    }
+
+    input{
+      width:100%;
+      padding:10px;
+      margin-top:6px;
+      border-radius:8px;
+      border:1px solid #d1d5db;
+      font-size:0.95rem;
+    }
+
+    .btn{
+      width:100%;
+      padding:10px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      background:linear-gradient(180deg,var(--accent),var(--accent-dark));
+      color:white;
+      font-weight:600;
+      margin-top:14px;
+      transition:0.2s;
+    }
+
+    .btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 20px rgba(11,143,108,0.2);
+    }
+
+    .link{
+      color:var(--accent-dark);
+      text-decoration:underline;
+      cursor:pointer;
+    }
+
+    p{
+      margin-top:12px;
+      text-align:center;
+      font-size:0.9rem;
+    }
+  </style>
 </head>
 
 <body class="auth-page">
-  <div class="auth-wrapper container">
+
+  <div class="auth-wrapper">
     <div class="auth-card">
       <div class="brand auth-brand">
-        <img src="assets/logo.jpg" alt="logo" class="logo-img-sm" />
+        <img src="assets/logo.jpg" alt="logo" />
         <h2>Welcome back</h2>
       </div>
 
@@ -23,16 +134,15 @@
         <label>Password</label>
         <input id="password" type="password" required placeholder="password" />
 
-        <button class="btn primary" type="submit" style="margin-top:14px;">Login</button>
+        <button class="btn" type="submit">Login</button>
       </form>
 
-      <p style="text-align:center;margin-top:12px;">
+      <p>
         Don’t have an account? <a href="signupp.html" class="link">Create one</a>
       </p>
     </div>
   </div>
 
-  <!-- Scripts -->
   <script src="js/auth.js"></script>
 </body>
 </html>
