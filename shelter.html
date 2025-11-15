@@ -17,8 +17,8 @@
     body {
       background: linear-gradient(135deg, #e0f2fe, #ecfdf5, #f0fdf4);
       font-family: "Inter", sans-serif;
-      color: #1f2937;
     }
+
     /* ===== Navbar ===== */
     header.navbar {
       background-color: #ffffff;
@@ -27,6 +27,7 @@
       top: 0;
       z-index: 100;
     }
+
     .navbar nav {
       display: flex;
       justify-content: space-between;
@@ -45,6 +46,7 @@
       height: 42px;
       border-radius: 0.5rem;
     }
+
     .brand span {
       font-weight: 700;
       color: #0f766e;
@@ -71,17 +73,16 @@
       color: white;
     }
 
-    .lang-select {
+    #map {
+      height: 300px;
+      border-radius: 0.75rem;
       border: 1px solid #d1d5db;
-       border-radius: 0.375rem;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.85rem;
     }
-    #map { height: 300px; border-radius: 0.75rem; border: 1px solid #d1d5db; }
   </style>
 </head>
 
 <body>
+
   <!-- Header -->
   <header class="bg-white shadow-sm sticky top-0 z-40 w-full p-0 m-0">
     <header class="navbar p-0 m-0">
@@ -90,14 +91,14 @@
           <img src="assets/logo.jpg" alt="CirclEats Logo" />
           <span>CirclEats</span>
         </div>
-  
+
         <div>
           <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
-          <button onclick="window.location.href='volunteer.html'" class="nav-btn active">Volunteer</button>
-          <button onclick="window.location.href='shelter.html'" class="nav-btn">Shelter</button>
+          <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
+          <button onclick="window.location.href='shelter.html'" class="nav-btn active">Shelter</button>
           <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
         </div>
-  
+
         <select id="lang-select" class="lang-select">
           <option value="en">English</option>
           <option value="hi">हिन्दी</option>
@@ -107,17 +108,17 @@
     </header>
   </header>
 
-
-  <!-- ✅ Main -->
+  <!-- Main -->
   <main class="max-w-4xl mx-auto p-4">
     <h1 class="text-3xl font-bold text-green-700 text-center mb-6">Shelter Dashboard</h1>
 
     <!-- Map -->
     <div class="bg-white shadow-md rounded-xl p-4 mb-6">
       <h2 class="text-xl font-semibold mb-2">📍 Select Shelter Location</h2>
+
       <div id="map"></div>
       <p class="text-sm text-gray-500 text-center mt-2">
-        Click on the map to set your delivery location or allow GPS for auto-location.
+        Click on the map to set your shelter location.
       </p>
     </div>
 
@@ -132,12 +133,30 @@
     © 2025 CirclEats | Nourishing Communities 💚
   </footer>
 
-  <!-- ✅ Shelter JS -->
+  <!-- JS -->
   <script>
     const API_BASE = "https://backend-circleats.onrender.com/api";
-    let selectedLocation = "";
+    let selectedLocation = ""; // stores lat,lon
 
-    // 🌍 Initialize map
+    /* ==========================================================
+       🌍 Reverse Geocode (Convert lat,lon → real address)
+    ========================================================== */
+    async function getAddressFromCoords(lat, lon) {
+      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        return data.display_name || `${lat}, ${lon}`;
+      } catch (err) {
+        console.error("Reverse geocoding failed:", err);
+        return `${lat}, ${lon}`; // fallback
+      }
+    }
+
+    /* ==========================================================
+       🌍 Init Map + Click Handler
+    ========================================================== */
     function initMap() {
       const map = new ol.Map({
         target: "map",
@@ -150,15 +169,18 @@
 
       map.on("click", (evt) => {
         const coord = ol.proj.toLonLat(evt.coordinate);
-        selectedLocation = `${coord[1].toFixed(4)}, ${coord[0].toFixed(4)}`;
-        alert("📍 Shelter location set to: " + selectedLocation);
+        selectedLocation = `${coord[1].toFixed(5)}, ${coord[0].toFixed(5)}`;
+        alert("📍 Location selected!");
       });
 
+      // Auto-detect GPS
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition((pos) => {
           const lon = pos.coords.longitude;
           const lat = pos.coords.latitude;
-          selectedLocation = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+
+          selectedLocation = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+
           const coords = ol.proj.fromLonLat([lon, lat]);
           map.getView().setCenter(coords);
           map.getView().setZoom(14);
@@ -166,7 +188,9 @@
       }
     }
 
-    // 🥗 Load pending donations
+    /* ==========================================================
+       🍱 Load Pending Donations
+    ========================================================== */
     async function loadAvailableDonations() {
       try {
         const res = await fetch(`${API_BASE}/donations`);
@@ -174,14 +198,13 @@
         const container = document.getElementById("availableDonations");
         container.innerHTML = "";
 
-        // 🟢 Filter only pending donations
         const pending = data.filter((d) => (d.status || "").toLowerCase() === "pending");
+
         if (!pending.length) {
-          container.innerHTML = `<p class="text-gray-500 text-center">No pending donations available right now.</p>`;
+          container.innerHTML = `<p class="text-gray-500 text-center">No pending donations available.</p>`;
           return;
         }
 
-        // Render each card
         pending.forEach((d) => {
           const div = document.createElement("div");
           div.className = "p-4 border-l-4 border-green-600 rounded-lg shadow-sm bg-white";
@@ -189,12 +212,13 @@
             <h3 class="text-lg font-semibold text-green-700">${d.item}</h3>
             <p><strong>Quantity:</strong> ${d.quantity}</p>
             <p><strong>Pickup Location:</strong> ${d.location}</p>
-            <p><strong>Status:</strong> ${d.status}</p>
+
             <div class="flex flex-wrap gap-3 mt-3">
               <button onclick="requestDelivery('${d._id}', false)" 
                 class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
                 🚚 Deliver to my shelter
               </button>
+
               <button onclick="requestDelivery('${d._id}', true)" 
                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
                 🏃 I will collect myself
@@ -205,27 +229,35 @@
         });
       } catch (err) {
         console.error("Error loading donations:", err);
-        document.getElementById("availableDonations").innerHTML =
-          "<p class='text-red-600'>Error loading data. Please refresh.</p>";
       }
     }
 
-    // ✅ Request delivery or self-pickup
+    /* ==========================================================
+       📦 Submit Delivery Request
+    ========================================================== */
     async function requestDelivery(id, selfPickup = false) {
       const email = localStorage.getItem("email");
+
       if (!email) {
         alert("⚠️ Please log in as a shelter first!");
         return;
       }
 
-      if (!selectedLocation && !selfPickup) {
+      if (!selfPickup && !selectedLocation) {
         alert("📍 Please select a location on the map first!");
         return;
       }
 
+      let address = "Self Pickup";
+
+      if (!selfPickup) {
+        const [lat, lon] = selectedLocation.split(",").map((s) => s.trim());
+        address = await getAddressFromCoords(lat, lon);
+      }
+
       const payload = {
         shelter: email,
-        location: selfPickup ? "Self Pickup" : selectedLocation,
+        location: address,
         self_pickup: selfPickup,
       };
 
@@ -237,27 +269,25 @@
         });
 
         const data = await res.json();
+
         if (res.ok) {
-          alert(data.message || "✅ Request submitted successfully!");
+          alert("📦 Request Submitted!\n\nLocation sent:\n" + address);
           loadAvailableDonations();
         } else {
           alert("⚠️ " + (data.error || "Failed to submit request."));
         }
       } catch (err) {
-        console.error("Error requesting delivery:", err);
-        alert("❌ Server error while processing the request.");
+        console.error("Error submitting request:", err);
+        alert("❌ Server error submitting request");
       }
     }
 
-    // 🔹 Initialize
+    // Init
     window.addEventListener("DOMContentLoaded", () => {
       initMap();
       loadAvailableDonations();
     });
   </script>
+
 </body>
 </html>
-
-
-
-
