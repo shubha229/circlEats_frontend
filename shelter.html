@@ -19,7 +19,6 @@
       font-family: "Inter", sans-serif;
     }
 
-    /* ===== Navbar ===== */
     header.navbar {
       background-color: #ffffff;
       box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
@@ -64,14 +63,8 @@
       transition: all 0.2s ease;
     }
 
-    .nav-btn:hover {
-      background-color: #f3f4f6;
-    }
-
-    .nav-btn.active {
-      background-color: #0f766e;
-      color: white;
-    }
+    .nav-btn:hover { background-color: #f3f4f6; }
+    .nav-btn.active { background-color: #0f766e; color: white; }
 
     #map {
       height: 300px;
@@ -118,7 +111,7 @@
 
       <div id="map"></div>
       <p class="text-sm text-gray-500 text-center mt-2">
-        Click on the map to set your shelter location.
+        Click anywhere on the map. Address will be auto-detected.
       </p>
     </div>
 
@@ -136,21 +129,20 @@
   <!-- JS -->
   <script>
     const API_BASE = "https://backend-circleats.onrender.com/api";
-    let selectedLocation = ""; // stores lat,lon
+    let selectedLocation = "";  // Always stored as full address
 
     /* ==========================================================
-       🌍 Reverse Geocode (Convert lat,lon → real address)
+       🌍 Reverse Geocode (lat, lon → real address)
     ========================================================== */
     async function getAddressFromCoords(lat, lon) {
       const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-
       try {
         const res = await fetch(url);
         const data = await res.json();
         return data.display_name || `${lat}, ${lon}`;
       } catch (err) {
         console.error("Reverse geocoding failed:", err);
-        return `${lat}, ${lon}`; // fallback
+        return `${lat}, ${lon}`;
       }
     }
 
@@ -167,19 +159,26 @@
         }),
       });
 
-      map.on("click", (evt) => {
+      // User clicks map → convert → save full address
+      map.on("click", async (evt) => {
         const coord = ol.proj.toLonLat(evt.coordinate);
-        selectedLocation = `${coord[1].toFixed(5)}, ${coord[0].toFixed(5)}`;
-        alert("📍 Location selected!");
+        const lon = coord[0];
+        const lat = coord[1];
+
+        const address = await getAddressFromCoords(lat, lon);
+        selectedLocation = address;
+
+        alert("📍 Location selected:\n" + address);
       });
 
-      // Auto-detect GPS
+      // Auto GPS detect
       if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition((pos) => {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
           const lon = pos.coords.longitude;
           const lat = pos.coords.latitude;
 
-          selectedLocation = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+          const address = await getAddressFromCoords(lat, lon);
+          selectedLocation = address;
 
           const coords = ol.proj.fromLonLat([lon, lat]);
           map.getView().setCenter(coords);
@@ -201,7 +200,7 @@
         const pending = data.filter((d) => (d.status || "").toLowerCase() === "pending");
 
         if (!pending.length) {
-          container.innerHTML = `<p class="text-gray-500 text-center">No pending donations available.</p>`;
+          container.innerHTML = `<p class="text-gray-500 text-center">No pending donations.</p>`;
           return;
         }
 
@@ -213,15 +212,15 @@
             <p><strong>Quantity:</strong> ${d.quantity}</p>
             <p><strong>Pickup Location:</strong> ${d.location}</p>
 
-            <div class="flex flex-wrap gap-3 mt-3">
-              <button onclick="requestDelivery('${d._id}', false)" 
+            <div class="flex gap-3 mt-3">
+              <button onclick="requestDelivery('${d._id}', false)"
                 class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
                 🚚 Deliver to my shelter
               </button>
 
-              <button onclick="requestDelivery('${d._id}', true)" 
+              <button onclick="requestDelivery('${d._id}', true)"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
-                🏃 I will collect myself
+                🏃 Self Pickup
               </button>
             </div>
           `;
@@ -238,21 +237,12 @@
     async function requestDelivery(id, selfPickup = false) {
       const email = localStorage.getItem("email");
 
-      if (!email) {
-        alert("⚠️ Please log in as a shelter first!");
-        return;
-      }
+      if (!email) return alert("⚠️ Please log in as a shelter first!");
+
+      let address = selfPickup ? "Self Pickup" : selectedLocation;
 
       if (!selfPickup && !selectedLocation) {
-        alert("📍 Please select a location on the map first!");
-        return;
-      }
-
-      let address = "Self Pickup";
-
-      if (!selfPickup) {
-        const [lat, lon] = selectedLocation.split(",").map((s) => s.trim());
-        address = await getAddressFromCoords(lat, lon);
+        return alert("📍 Please click on the map to set your shelter location.");
       }
 
       const payload = {
@@ -261,24 +251,19 @@
         self_pickup: selfPickup,
       };
 
-      try {
-        const res = await fetch(`${API_BASE}/shelter_request/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+      const res = await fetch(`${API_BASE}/shelter_request/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-        const data = await res.json();
+      const data = await res.json();
 
-        if (res.ok) {
-          alert("📦 Request Submitted!\n\nLocation sent:\n" + address);
-          loadAvailableDonations();
-        } else {
-          alert("⚠️ " + (data.error || "Failed to submit request."));
-        }
-      } catch (err) {
-        console.error("Error submitting request:", err);
-        alert("❌ Server error submitting request");
+      if (res.ok) {
+        alert("📦 Request submitted!\n" + address);
+        loadAvailableDonations();
+      } else {
+        alert("⚠️ " + (data.error || "Failed to submit request."));
       }
     }
 
