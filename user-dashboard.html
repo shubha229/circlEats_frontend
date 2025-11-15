@@ -62,6 +62,13 @@
             <p>Deliveries Volunteered</p>
             <p id="volunteerCount" class="text-2xl font-bold text-green-700">0</p>
           </div>
+
+          <!-- NEW SELF PICKUP COUNTER -->
+          <div class="stats-tile">
+            <p>Self Pickups</p>
+            <p id="selfPickupCount" class="text-2xl font-bold text-green-700">0</p>
+          </div>
+
         </div>
       </aside>
   
@@ -107,16 +114,24 @@
         const res = await fetch(`${API_BASE}/my_donations/${userId}`);
         const data = await res.json();
   
-        // LEFT SIDE STATS
+        /* ---------------- LEFT SIDE COUNTS ---------------- */
         document.getElementById("donationCount").innerText = data.length;
   
         const volunteerCount = data.filter(
           d => d.collected_by === email || d.status === "In Transit"
         ).length;
-  
         document.getElementById("volunteerCount").innerText = volunteerCount;
+
+        // NEW — Count SELF PICKUPS
+        const selfPickupCount = data.filter(
+          d => d.shelter_request &&
+               d.shelter_request.self_pickup === true &&
+               d.shelter_request.email === email
+        ).length;
+
+        document.getElementById("selfPickupCount").innerText = selfPickupCount;
   
-        // RIGHT SIDE ACTIVITY
+        /* ---------------- RIGHT SIDE ACTIVITY ---------------- */
         const container = document.getElementById("activityList");
         container.innerHTML = "";
   
@@ -124,12 +139,23 @@
           let type = "Donation";
           let message = `Donated ${item.quantity} servings of ${item.item}.`;
   
+          // VOLUNTEER
           if (item.collected_by === email || item.status === "In Transit") {
             type = "Volunteer";
             message = `You volunteered to deliver ${item.item}.`;
           }
-  
-          if (item.status === "Donated") {
+
+          // SELF PICKUP (NEW)
+          if (item.shelter_request &&
+              item.shelter_request.self_pickup === true &&
+              item.shelter_request.email === email) {
+
+            type = "Shelter";
+            message = `You chose SELF PICKUP for ${item.item}.`;
+          }
+
+          // NORMAL DONATION TO SHELTER
+          else if (item.status === "Donated") {
             type = "Shelter";
             message = `Delivered ${item.item} to ${item.donated_to}.`;
           }
@@ -157,4 +183,3 @@
 
 </body>
 </html>
-
