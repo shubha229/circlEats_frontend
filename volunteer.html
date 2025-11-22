@@ -236,7 +236,7 @@
 
       try {
         const res = await fetch(`${API_BASE}/my_deliveries/${volunteer}`);
-        const data = await res.json();
+        const data = await res.json(); // data already filtered for this volunteer ONLY
 
         if (!data.length) {
           container.innerHTML =
