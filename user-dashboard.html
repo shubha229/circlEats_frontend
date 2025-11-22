@@ -94,75 +94,91 @@
 
   <script>
     const API_BASE = "https://backend-circleats.onrender.com/api";
-
+    
     function formatDate(id) {
       const ts = parseInt(id.substring(0, 8), 16) * 1000;
       return new Date(ts).toLocaleString();
     }
-
+    
     async function loadDashboard() {
       const userId = localStorage.getItem("user_id");
       const email = localStorage.getItem("email");
       const name = localStorage.getItem("name");
-
+    
       document.getElementById("userName").innerText = name || "User";
       document.getElementById("userEmail").innerText = email || "";
-
-      if (!userId) {
+    
+      if (!userId || !email) {
         document.getElementById("activityList").innerHTML =
           `<p class='text-red-600 text-center'>User not logged in.</p>`;
         return;
       }
-
+    
       try {
-        const res = await fetch(`${API_BASE}/my_donations/${userId}`);
-        const data = await res.json();
-
-        // STATS
-        document.getElementById("donationCount").innerText = data.length;
-        document.getElementById("completedCount").innerText =
-          data.filter(d => d.status === "Donated").length;
-
-        // ACTIVITY LIST
+        // Fetch
+        const donateRes = await fetch(`${API_BASE}/my_donations/${userId}`);
+        const donations = await donateRes.json();
+    
+        const requestRes = await fetch(`${API_BASE}/my_requests/${email}`);
+        const requests = await requestRes.json();
+    
+        const deliverRes = await fetch(`${API_BASE}/my_deliveries/${email}`);
+        const deliveries = await deliverRes.json();
+    
+        // LEFT STATS
+        document.getElementById("donationCount").innerText = donations.length;
+        document.getElementById("volunteerCount").innerText = deliveries.length;
+        document.getElementById("selfPickupCount").innerText = requests.filter(
+          r => r.shelter_request?.self_pickup === true
+        ).length;
+    
+        // RIGHT SIDE ACTIVITY
+        const allActivities = [...donations, ...requests, ...deliveries]
+          .sort((a, b) => b._id.localeCompare(a._id));
+    
         const container = document.getElementById("activityList");
         container.innerHTML = "";
-
-        data.reverse().forEach(item => {
+    
+        allActivities.forEach(item => {
+          let type = "";
           let message = "";
-
-          if (item.status === "Pending") {
-            message = `You created a donation: ${item.item}`;
+    
+          if (item.user_id === userId && item.status === "Pending") {
+            type = "Donation";
+            message = `You donated ${item.item}.`;
           }
-          else if (item.status === "Collected") {
-            message = `${item.item} was collected by a volunteer`;
+          else if (item.requested_by === email) {
+            if (item.shelter_request?.self_pickup)
+              message = `You chose SELF PICKUP for ${item.item}.`;
+            else
+              message = `You requested delivery for ${item.item}.`;
+            type = "Shelter";
           }
-          else if (item.status === "Requested") {
-            message = `${item.item} was requested by a shelter`;
+          else if (item.accepted_by === email) {
+            type = "Volunteer";
+            message = `You volunteered to deliver ${item.item}.`;
           }
-          else if (item.status === "In Transit") {
-            message = `${item.item} is on the way to a shelter`;
-          }
-          else if (item.status === "Donated") {
-            message = `${item.item} successfully fed people`;
-          }
-
-          container.innerHTML += `
-            <div class="activity-card">
-              <p class="Donation">${message}</p>
-              <p class="activity-time">📅 ${formatDate(item._id)}</p>
-            </div>
+    
+          const div = document.createElement("div");
+          div.className = "activity-card";
+          div.innerHTML = `
+            <p class="${type}">${type} — ${message}</p>
+            <p class="activity-time">📅 ${formatDate(item._id)}</p>
           `;
+          container.appendChild(div);
         });
-
+    
       } catch (err) {
         console.error(err);
         document.getElementById("activityList").innerHTML =
-          `<p class='text-red-600 text-center'>Error loading dashboard.</p>`;
+          `<p class='text-red-600 text-center'>Error loading data.</p>`;
       }
     }
-
+    
     document.addEventListener("DOMContentLoaded", loadDashboard);
+
   </script>
 
 </body>
 </html>
+
