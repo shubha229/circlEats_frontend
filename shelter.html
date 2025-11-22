@@ -196,32 +196,40 @@
     ========================================================== */
     async function loadAvailableDonations() {
       try {
-        const res = await fetch(`${API_BASE}/my_requests/${localStorage.getItem("email")}`);
+        const res = await fetch(`${API_BASE}/donations`);
         const data = await res.json();
-        const container = document.getElementById("availableDonations");
+    
+        const container = document.getElementById("available");
+    
         container.innerHTML = "";
-
-        const pending = data.filter((d) => (d.status || "").toLowerCase() === "pending");
-
-        if (!pending.length) {
-          container.innerHTML = `<p class="text-gray-500 text-center">No pending donations.</p>`;
+    
+        const pendingFoods = data.filter(d =>
+          (d.status || "").toLowerCase() === "pending" &&
+          !d.requested_by &&
+          !d.accepted_by
+        );
+    
+        if (!pendingFoods.length) {
+          container.innerHTML = `<p class="text-gray-500 text-center">
+            No donations available right now.
+          </p>`;
           return;
         }
-
-        pending.forEach((d) => {
+    
+        pendingFoods.forEach(d => {
           const div = document.createElement("div");
           div.className = "p-4 border-l-4 border-green-600 rounded-lg shadow-sm bg-white";
           div.innerHTML = `
             <h3 class="text-lg font-semibold text-green-700">${d.item}</h3>
             <p><strong>Quantity:</strong> ${d.quantity}</p>
             <p><strong>Pickup Location:</strong> ${d.location}</p>
-
+    
             <div class="flex gap-3 mt-3">
               <button onclick="requestDelivery('${d._id}', false)"
                 class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
                 🚚 Deliver to my shelter
               </button>
-
+    
               <button onclick="requestDelivery('${d._id}', true)"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
                 🏃 Self Pickup
@@ -230,10 +238,12 @@
           `;
           container.appendChild(div);
         });
+    
       } catch (err) {
         console.error("Error loading donations:", err);
       }
     }
+
 
     /* ==========================================================
        📦 Submit Delivery Request
@@ -280,6 +290,7 @@
 
 </body>
 </html>
+
 
 
 
