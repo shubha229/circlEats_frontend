@@ -17,10 +17,7 @@
     body {
       background: linear-gradient(135deg, #e0f2fe, #ecfdf5, #f0fdf4);
       font-family: "Inter", sans-serif;
-      margin: 0;
-      padding: 0;
     }
-
     header.navbar {
       background-color: #ffffff;
       box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
@@ -28,32 +25,27 @@
       top: 0;
       z-index: 100;
     }
-
     .navbar nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 0.8rem 1.5rem;
     }
-
     .brand {
       display: flex;
       align-items: center;
       gap: 0.6rem;
     }
-
     .brand img {
       width: 42px;
       height: 42px;
       border-radius: 0.5rem;
     }
-
     .brand span {
       font-weight: 700;
       color: #0f766e;
       font-size: 1.3rem;
     }
-
     .nav-btn {
       padding: 0.45rem 0.9rem;
       border-radius: 0.5rem;
@@ -64,12 +56,8 @@
       color: #0f172a;
       transition: all 0.2s ease;
     }
-
     .nav-btn:hover { background-color: #f3f4f6; }
     .nav-btn.active { background-color: #0f766e; color: white; }
-    .logodescription {
-      cursor: pointer;
-    }
     #map {
       height: 300px;
       border-radius: 0.75rem;
@@ -78,25 +66,25 @@
   </style>
 </head>
 
-<body  class="min-h-screen flex flex-col items-center">
+<body class="min-h-screen flex flex-col items-center">
 
   <!-- Header -->
-  <header class="bg-white shadow-sm sticky top-0 z-40 w-full p-0">
+  <header class="bg-white shadow-sm sticky top-0 w-full">
     <header class="navbar">
       <nav>
         <div class="brand">
-          <img src="assets/logo.jpg" alt="CirclEats Logo" onclick="window.location.href='index.html'"/>
-          <span class="logodescription" onclick="window.location.href='index.html'">CirclEats</span>
+          <img src="assets/logo.jpg" onclick="window.location.href='index.html'"/>
+          <span onclick="window.location.href='index.html'" class="cursor-pointer">CirclEats</span>
         </div>
 
         <div>
           <button onclick="window.location.href='dvs.html'" class="nav-btn">Donor</button>
           <button onclick="window.location.href='volunteer.html'" class="nav-btn">Volunteer</button>
-          <button onclick="window.location.href='shelter.html'" class="nav-btn active">Shelter</button>
+          <button class="nav-btn active">Shelter</button>
           <button onclick="window.location.href='user-dashboard.html'" class="nav-btn">Profile</button>
         </div>
 
-        <select id="lang-select" class="lang-select">
+        <select id="lang-select" class="border rounded px-2 py-1 text-sm">
           <option value="en">English</option>
           <option value="hi">हिन्दी</option>
           <option value="kn">ಕನ್ನಡ</option>
@@ -115,44 +103,40 @@
 
       <div id="map"></div>
       <p class="text-sm text-gray-500 text-center mt-2">
-        Click anywhere on the map. Address will be auto-detected.
+        Click anywhere on the map. Address auto-detected.
       </p>
     </div>
 
-    <!-- Available  -->
+    <!-- Available Donations -->
     <div class="bg-white shadow-md rounded-xl p-4">
       <h2 class="text-xl font-semibold mb-3">🍱 Food Ready for Donation</h2>
-      <div id="available" class="space-y-3 text-gray-700">Loading available ...</div>
+      <div id="available" class="space-y-3 text-gray-700">
+        Loading available donations...
+      </div>
     </div>
   </main>
 
-  <footer class="text-center text-sm text-gray-500 py-4">
+  <footer class="text-center text-gray-500 py-4">
     © 2025 CirclEats | Nourishing Communities 💚
   </footer>
 
-  <!-- JS -->
+  <!-- Script -->
   <script>
     const API_BASE = "https://backend-circleats.onrender.com/api";
-    let selectedLocation = "";  // Always stored as full address
+    let selectedLocation = "";
 
-    /* ==========================================================
-       🌍 Reverse Geocode (lat, lon → real address)
-    ========================================================== */
     async function getAddressFromCoords(lat, lon) {
-      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
       try {
-        const res = await fetch(url);
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+        );
         const data = await res.json();
-        return data.display_name || `${lat}, ${lon}`;
-      } catch (err) {
-        console.error("Reverse geocoding failed:", err);
-        return `${lat}, ${lon}`;
+        return data.display_name || `${lat},${lon}`;
+      } catch {
+        return `${lat},${lon}`;
       }
     }
 
-    /* ==========================================================
-       🌍 Init Map + Click Handler
-    ========================================================== */
     function initMap() {
       const map = new ol.Map({
         target: "map",
@@ -163,105 +147,72 @@
         }),
       });
 
-      // User clicks map → convert → save full address
-      map.on("click", async (evt) => {
-        const coord = ol.proj.toLonLat(evt.coordinate);
-        const lon = coord[0];
-        const lat = coord[1];
-
-        const address = await getAddressFromCoords(lat, lon);
-        selectedLocation = address;
-
-        alert("📍 Location selected:\n" + address);
+      map.on("click", async evt => {
+        const [lon, lat] = ol.proj.toLonLat(evt.coordinate);
+        selectedLocation = await getAddressFromCoords(lat, lon);
+        alert("📍 Location:\n" + selectedLocation);
       });
-
-      // Auto GPS detect
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-          const lon = pos.coords.longitude;
-          const lat = pos.coords.latitude;
-
-          const address = await getAddressFromCoords(lat, lon);
-          selectedLocation = address;
-
-          const coords = ol.proj.fromLonLat([lon, lat]);
-          map.getView().setCenter(coords);
-          map.getView().setZoom(14);
-        });
-      }
     }
 
-    /* ==========================================================
-       🍱 Load Pending 
-    ========================================================== */
     async function loadAvailableDonations() {
       try {
         const res = await fetch(`${API_BASE}/donations`);
         const data = await res.json();
-    
         const container = document.getElementById("available");
-    
         container.innerHTML = "";
-    
+
         const pendingFoods = data.filter(d =>
           (d.status || "").toLowerCase() === "pending" &&
-          !d.requested_by &&
-          !d.accepted_by
+          !d.shelter_request &&
+          !d.collected_by
         );
-    
+
         if (!pendingFoods.length) {
-          container.innerHTML = `<p class="text-gray-500 text-center">
-            No donations available right now.
-          </p>`;
+          container.innerHTML = `<p class="text-center text-gray-600">No available food donations.</p>`;
           return;
         }
-    
+
         pendingFoods.forEach(d => {
           const div = document.createElement("div");
-          div.className = "p-4 border-l-4 border-green-600 rounded-lg shadow-sm bg-white";
+          div.className =
+            "p-4 border-l-4 border-green-700 rounded-lg shadow bg-white";
+
           div.innerHTML = `
-            <h3 class="text-lg font-semibold text-green-700">${d.item}</h3>
-            <p><strong>Quantity:</strong> ${d.quantity}</p>
-            <p><strong>Pickup Location:</strong> ${d.location}</p>
-    
-            <div class="flex gap-3 mt-3">
-              <button onclick="requestDelivery('${d._id}', false)"
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
-                🚚 Deliver to my shelter
-              </button>
-    
-              <button onclick="requestDelivery('${d._id}', true)"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
-                🏃 Self Pickup
-              </button>
-            </div>
+            <h3 class="text-lg font-bold text-green-700">${d.item}</h3>
+            <p><strong>Qty:</strong> ${d.quantity}</p>
+            <p><strong>Pickup:</strong> ${d.location}</p>
+
+            <button class="mt-3 bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-md"
+              onclick="requestDelivery('${d._id}', false)">
+              🚚 Deliver to my Shelter
+            </button>
+
+            <button class="mt-3 ml-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+              onclick="requestDelivery('${d._id}', true)">
+              🏃 Self Pickup
+            </button>
           `;
+
           container.appendChild(div);
         });
-    
-      } catch (err) {
-        console.error("Error loading donations:", err);
+
+      } catch {
+        document.getElementById("available").innerHTML =
+          `<p class="text-red-600 text-center">Error fetching donations.</p>`;
       }
     }
 
-
-    /* ==========================================================
-       📦 Submit Delivery Request
-    ========================================================== */
-    async function requestDelivery(id, selfPickup = false) {
+    async function requestDelivery(id, selfPickup) {
       const email = localStorage.getItem("email");
-
-      if (!email) return alert("⚠️ Please log in as a shelter first!");
-
-      let address = selfPickup ? "Self Pickup" : selectedLocation;
+      if (!email) return alert("Login required!");
 
       if (!selfPickup && !selectedLocation) {
-        return alert("📍 Please click on the map to set your shelter location.");
+        return alert("Click on the map to set location!");
       }
 
       const payload = {
         shelter: email,
-        location: address,
+        location: selfPickup ? "Self Pickup" : selectedLocation,
         self_pickup: selfPickup,
       };
 
@@ -271,18 +222,13 @@
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
-
       if (res.ok) {
-        alert("📦 Request submitted!\n" + address);
+        alert("Request Submitted!");
         loadAvailableDonations();
-      } else {
-        alert("⚠️ " + (data.error || "Failed to submit request."));
       }
     }
 
-    // Init
-    window.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
       initMap();
       loadAvailableDonations();
     });
@@ -290,10 +236,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
