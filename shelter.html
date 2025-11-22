@@ -119,10 +119,10 @@
       </p>
     </div>
 
-    <!-- Available Donations -->
+    <!-- Available  -->
     <div class="bg-white shadow-md rounded-xl p-4">
       <h2 class="text-xl font-semibold mb-3">🍱 Food Ready for Donation</h2>
-      <div id="availableDonations" class="space-y-3 text-gray-700">Loading available donations...</div>
+      <div id="available" class="space-y-3 text-gray-700">Loading available ...</div>
     </div>
   </main>
 
@@ -192,11 +192,11 @@
     }
 
     /* ==========================================================
-       🍱 Load Pending Donations
+       🍱 Load Pending 
     ========================================================== */
     async function loadAvailableDonations() {
       try {
-        const res = await fetch(`${API_BASE}/donations`);
+        const res = await fetch(`${API_BASE}/my_requests/${localStorage.getItem("email")}`);
         const data = await res.json();
         const container = document.getElementById("availableDonations");
         container.innerHTML = "";
@@ -280,6 +280,7 @@
 
 </body>
 </html>
+
 
 
 
